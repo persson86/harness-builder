@@ -1,40 +1,65 @@
-#!/bin/sh
+#!/bin/bash
 input=$(cat)
 
 model=$(echo "$input" | jq -r '.model.display_name // "unknown model"')
 effort=$(echo "$input" | jq -r '.effort.level // empty')
 used_pct=$(echo "$input" | jq -r '.context_window.used_percentage // empty')
 session=$(echo "$input" | jq -r '.session_name // empty')
-in_tokens=$(echo "$input" | jq -r '.context_window.current_usage.input_tokens // empty')
-out_tokens=$(echo "$input" | jq -r '.context_window.current_usage.output_tokens // empty')
-cache_write=$(echo "$input" | jq -r '.context_window.current_usage.cache_creation_input_tokens // 0')
-cache_read=$(echo "$input" | jq -r '.context_window.current_usage.cache_read_input_tokens // 0')
+transcript_path=$(echo "$input" | jq -r '.transcript_path // empty')
+cumul_in=0; cumul_out=0; total_cost="0"
 
-parts=""
+# Sum tokens from a jsonl, deduplicating by message.id, with per-model pricing.
+# Prints: input_tokens output_tokens cost
+aggregate_jsonl() {
+  jq -r 'select(.message.usage != null and .message.stop_reason != null) |
+    [(.message.id // ""),
+     (.message.model // ""),
+     (.message.usage.input_tokens // 0),
+     (.message.usage.output_tokens // 0),
+     (.message.usage.cache_creation_input_tokens // 0),
+     (.message.usage.cache_read_input_tokens // 0)] | @tsv' \
+    "$1" 2>/dev/null |
+  sort -t$'\t' -k1,1 -u |
+  awk -F'\t' '
+    {
+      ti += $3 + $5 + $6; to += $4
+      pi=3.00; po=15.00; pcw=3.75; pcr=0.30
+      if ($2 ~ /haiku/) { pi=0.80; po=4.00; pcw=1.00; pcr=0.08 }
+      cost += ($3*pi + $4*po + $5*pcw + $6*pcr) / 1000000
+    }
+    END { print ti+0, to+0, cost+0 }'
+}
 
-# Model
+if [ -n "$transcript_path" ] && [ -f "$transcript_path" ]; then
+  read -r i o c < <(aggregate_jsonl "$transcript_path")
+  cumul_in=$((cumul_in + i)); cumul_out=$((cumul_out + o))
+  total_cost=$(awk "BEGIN {printf \"%.4f\", $total_cost + $c}")
+
+  subagent_dir="$(dirname "$transcript_path")/$(basename "$transcript_path" .jsonl)/subagents"
+  if [ -d "$subagent_dir" ]; then
+    for sa_file in "$subagent_dir"/*.jsonl; do
+      [ -f "$sa_file" ] || continue
+      read -r i o c < <(aggregate_jsonl "$sa_file")
+      cumul_in=$((cumul_in + i)); cumul_out=$((cumul_out + o))
+      total_cost=$(awk "BEGIN {printf \"%.4f\", $total_cost + $c}")
+    done
+  fi
+fi
+
 parts="$model"
 
-# Effort (only when present)
 if [ -n "$effort" ]; then
   parts="$parts | effort:$effort"
 fi
 
-# Context usage percentage (only after first message)
 if [ -n "$used_pct" ]; then
   parts="$(printf '%s | ctx:%s%%' "$parts" "$(printf '%.0f' "$used_pct")")"
 fi
 
-# Tokens in/out and projected cost (only after first message)
-if [ -n "$in_tokens" ] && [ -n "$out_tokens" ]; then
-  parts="$parts | in:$in_tokens out:$out_tokens"
-  cost=$(awk "BEGIN {
-    printf \"%.4f\", ($in_tokens * 3.00 + $out_tokens * 15.00 + $cache_write * 3.75 + $cache_read * 0.30) / 1000000
-  }")
-  parts="$parts | \$$cost"
+if [ "$cumul_out" -gt 0 ] 2>/dev/null; then
+  parts="$parts | in:$cumul_in out:$cumul_out | \$$total_cost"
 fi
 
-# Session name (only when set)
 if [ -n "$session" ]; then
   parts="$parts | $session"
 fi
