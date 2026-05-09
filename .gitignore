@@ -1,0 +1,9 @@
+# Ignore everything
+*
+
+# Track only these config files
+!.gitignore
+!CLAUDE.md
+!Design.md
+!.claude/
+!.claude/settings.json
