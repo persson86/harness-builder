@@ -2,6 +2,15 @@
 
 Behavioral guidelines to reduce common LLM coding mistakes. Merge with project-specific instructions as needed.
 
+## Scope
+
+**Escopo padrão:** apenas a pasta `/Users/persson/Ops`.
+
+**Exceções (read-only):**
+- `/Users/persson/second-brain` — leitura permitida; escrita e deleção bloqueadas pelo harness
+
+**Regra:** qualquer operação fora do escopo padrão (ler, editar, criar, deletar) exige confirmação explícita no chat antes de executar. Nunca acesse arquivos fora de Ops por conveniência ou por contexto implícito.
+
 **Tradeoff:** These guidelines bias toward caution over speed. For trivial tasks, use judgment.
 
 ## 1. Think Before Coding
