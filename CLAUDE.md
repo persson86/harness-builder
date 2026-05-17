@@ -78,7 +78,7 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 Don't spawn when the parent needs the reasoning, when synthesis requires holding things together, or when spawn overhead dominates the task.
 
 Pick the cheapest model that can do the subtask well:
-- **Haiku** — bulk mechanical work, no judgment required. Examples: mass rename/format/convert, grep/list without synthesis, repetitive boilerplate generation.
+- **Haiku** — bulk mechanical work, no judgment required. Extração textual, sem comparação semântica — o tier acima interpreta. Examples: mass rename/format/convert, grep/list without synthesis, repetitive boilerplate generation.
 - **Sonnet** — default; respond directly without spawning a subagent. Examples: bug fixes, feature implementation, code explanation, research with synthesis.
 - **Opus** — subtasks needing real planning or tradeoffs. Examples: system architecture decisions, security review, public API design.
 
@@ -92,7 +92,39 @@ Don't escalate tiers without a concrete reason. If a subagent realizes it needs 
 
 ---
 
-## 6. Preferred Tools
+## 6. Verification Layer
+
+**Codex (GPT-5.4) como segunda opinião ortogonal aos tiers da seção 5.** Não substitui execução — verifica decisões e diffs em momentos críticos.
+
+Codex é externo (CLI OpenAI), isolado de contexto. Latência típica: ~60-90s para reviews adversariais com reasoning; ~15-30s para diagnoses simples. Use deliberadamente, não em toda decisão.
+
+### Quando spawnar Codex proativamente
+
+Spawne `codex:codex-rescue` (via Task tool ou `/codex:rescue`) sem precisar de pedido nos três gatilhos abaixo:
+
+1. **Pós-refactor não-trivial** — antes de marcar concluído, peça review adversarial do diff. Pega regressões, suposições erradas e padrões violados que escapam ao próprio modelo executor.
+2. **Loop sem convergência (2+ tentativas falhas)** — quando sua abordagem não converge após duas iterações, delegue diagnosis independente ao Codex. Quebra bias do modelo.
+3. **Decisão arquitetural ou tradeoff não-trivial** — antes de commitar a uma direção (escolha de lib, design de API, estratégia de migração, refactor estrutural), peça pressão crítica adversarial.
+
+### Quando NÃO usar
+
+- Tarefas mecânicas — Haiku resolve mais rápido e mais barato.
+- Trabalho que cabe em um Sonnet single-pass.
+- Análise puramente não-código (planos de negócio, documentos) — o plugin é otimizado para engenharia; perde o ponto forte.
+- Decisões de baixo risco ou já com alta confiança.
+- De dentro de outro subagente (viola depth 2 da seção 5).
+
+### Como invocar
+
+- Passe contexto completo e explícito: diff/decisão + sua análise atual + onde quer pressão crítica. Codex não compartilha sua memória de sessão.
+- Output não auto-aplica: apresente o veredito do Codex ao usuário e deixe ele decidir aplicar ou não.
+- **Escolha do canal Codex:**
+  - `codex:codex-rescue` (via Task tool) — para crítica de decisões, análises e planos. Alvo: opinião defendida em texto.
+  - `/codex:review` (slash command) — para review de diff/código. Alvo: mudanças concretas de arquivos.
+
+---
+
+## 7. Preferred Tools
 
 ### Data Fetching
 
