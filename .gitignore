@@ -4,6 +4,7 @@
 # Track only these config files
 !.gitignore
 !CLAUDE.md
+!AGENTS.md
 !Design.md
 !.claude/
 !.claude/settings.json
