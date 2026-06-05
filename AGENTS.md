@@ -92,35 +92,26 @@ Don't escalate tiers without a concrete reason. If a subagent realizes it needs 
 
 ---
 
-## 6. Verification Layer
+## 6. Council — peer-review cruzado entre modelos
 
-**Codex (GPT-5.4) como segunda opinião ortogonal aos tiers da seção 5.** Não substitui execução — verifica decisões e diffs em momentos críticos.
+Builder profile da skill `/council` (escopada ao Ops). Dois modelos se revisam por **lente, não por rank**: **Codex (gpt-5.5 high) = correção/runtime** (lidera no builder), **Opus = design/arquitetura** (contesta). Revisor sempre **≠ autor**: Sonnet/Claude implementou → Codex revisa; Codex implementou (rescue) → Opus revisa. Externo, isolado de contexto (~60-90s review adversarial). Use deliberadamente, não em toda decisão.
 
-Codex é externo (CLI OpenAI), isolado de contexto. Latência típica: ~60-90s para reviews adversariais com reasoning; ~15-30s para diagnoses simples. Use deliberadamente, não em toda decisão.
+### Gatilhos proativos (sem precisar de pedido)
 
-### Quando spawnar Codex proativamente
-
-Spawne `codex:codex-rescue` (via Task tool ou `/codex:rescue`) sem precisar de pedido nos três gatilhos abaixo:
-
-1. **Pós-refactor não-trivial** — antes de marcar concluído, peça review adversarial do diff. Pega regressões, suposições erradas e padrões violados que escapam ao próprio modelo executor.
-2. **Loop sem convergência (2+ tentativas falhas)** — quando sua abordagem não converge após duas iterações, delegue diagnosis independente ao Codex. Quebra bias do modelo.
-3. **Decisão arquitetural ou tradeoff não-trivial** — antes de commitar a uma direção (escolha de lib, design de API, estratégia de migração, refactor estrutural), peça pressão crítica adversarial.
+1. **Pós-refactor não-trivial** — review adversarial do diff antes de marcar concluído.
+2. **Loop sem convergência (2+ falhas)** — diagnosis independente; quebra o bias do executor.
+3. **Decisão arquitetural / tradeoff** — pressão crítica antes de commitar a uma direção.
 
 ### Quando NÃO usar
 
-- Tarefas mecânicas — Haiku resolve mais rápido e mais barato.
-- Trabalho que cabe em um Sonnet single-pass.
-- Análise puramente não-código (planos de negócio, documentos) — o plugin é otimizado para engenharia; perde o ponto forte.
-- Decisões de baixo risco ou já com alta confiança.
-- De dentro de outro subagente (viola depth 2 da seção 5).
+Mecânico (Haiku), single-pass de Sonnet, baixo risco / alta confiança, de dentro de outro subagente (depth 2), análise puramente não-código.
 
-### Como invocar
+### Como
 
-- Passe contexto completo e explícito: diff/decisão + sua análise atual + onde quer pressão crítica. Codex não compartilha sua memória de sessão.
-- Output não auto-aplica: apresente o veredito do Codex ao usuário e deixe ele decidir aplicar ou não.
-- **Escolha do canal Codex:**
-  - `codex:codex-rescue` (via Task tool) — para crítica de decisões, análises e planos. Alvo: opinião defendida em texto.
-  - `/codex:review` (slash command) — para review de diff/código. Alvo: mudanças concretas de arquivos.
+- Prefira a skill **`/council`** — orquestra coleta do artefato + escolha do backend ≠ autor + framing anti-viés (assuma ≥3 problemas, ancore no repo, concorde só se justificado) + síntese.
+- Direto, se quiser: `codex:codex-rescue` (decisão/análise, read-only) · `/codex:review` ou `adversarial-review` (diff) · `opus-reviewer` via Agent (design de implementação).
+- **Output não auto-aplica:** apresente o veredito; o usuário decide.
+- **Stop-gate** automático Codex→Claude: opt-in per-repo (`/codex:setup --enable-review-gate`), **off por padrão**; ligue em trechos de alto risco.
 
 ---
 

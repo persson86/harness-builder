@@ -5,6 +5,7 @@
 !.gitignore
 !CLAUDE.md
 !AGENTS.md
+!README.md
 !Design.md
 !.claude/
 !.claude/settings.json
