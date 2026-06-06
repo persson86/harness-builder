@@ -56,6 +56,11 @@ if [ -n "$used_pct" ]; then
   parts="$(printf '%s | ctx:%s%%' "$parts" "$(printf '%.0f' "$used_pct")")"
 fi
 
+five_hr=$(echo "$input" | jq -r '.rate_limits.five_hour.used_percentage // empty')
+if [ -n "$five_hr" ]; then
+  parts="$(printf '%s | 5h:%s%%' "$parts" "$(printf '%.0f' "$five_hr")")"
+fi
+
 if [ "$cumul_out" -gt 0 ] 2>/dev/null; then
   parts="$parts | in:$cumul_in out:$cumul_out | \$$total_cost"
 fi
