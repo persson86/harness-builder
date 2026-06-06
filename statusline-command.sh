@@ -46,6 +46,14 @@ if [ -n "$transcript_path" ] && [ -f "$transcript_path" ]; then
   fi
 fi
 
+fmt_tokens() {
+  awk -v n="$1" 'BEGIN {
+    if (n >= 1000000) printf "%.1fM", n/1000000
+    else if (n >= 1000) printf "%.0fK", n/1000
+    else printf "%d", n
+  }'
+}
+
 parts="$model"
 
 if [ -n "$effort" ]; then
@@ -62,7 +70,7 @@ if [ -n "$five_hr" ]; then
 fi
 
 if [ "$cumul_out" -gt 0 ] 2>/dev/null; then
-  parts="$parts | in:$cumul_in out:$cumul_out | \$$total_cost"
+  parts="$parts | in:$(fmt_tokens "$cumul_in") out:$(fmt_tokens "$cumul_out") | \$$total_cost"
 fi
 
 if [ -n "$session" ]; then
