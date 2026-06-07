@@ -24,7 +24,8 @@ aggregate_jsonl() {
     {
       ti += $3 + $5 + $6; to += $4
       pi=3.00; po=15.00; pcw=3.75; pcr=0.30
-      if ($2 ~ /haiku/) { pi=0.80; po=4.00; pcw=1.00; pcr=0.08 }
+      if ($2 ~ /haiku/) { pi=1.00; po=5.00; pcw=1.25; pcr=0.10 }
+      else if ($2 ~ /opus/) { pi=5.00; po=25.00; pcw=6.25; pcr=0.50 }
       cost += ($3*pi + $4*po + $5*pcw + $6*pcr) / 1000000
     }
     END { print ti+0, to+0, cost+0 }'
