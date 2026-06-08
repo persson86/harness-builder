@@ -6,7 +6,9 @@
 !CLAUDE.md
 !AGENTS.md
 !README.md
-!Design.md
+!design/
+!design/**
+design/.DS_Store
 !.claude/
 !.claude/settings.json
 !statusline-command.sh

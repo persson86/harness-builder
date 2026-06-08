@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ops Design System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-primary:          #1A73E8;
+      --color-primary-hover:    #1557B0;
+      --color-primary-active:   #0D47A1;
+      --color-primary-subtle:   #E8F0FE;
+      --color-bg:               #FFFFFF;
+      --color-surface:          #F8F9FA;
+      --color-border:           #DADCE0;
+      --color-muted:            #5F6368;
+      --color-text:             #202124;
+      --color-success:          #1E8E3E;
+      --color-warning:          #F9AB00;
+      --color-error:            #D93025;
+      --color-accent:           #E8710A;
+
+      --font-sans: Inter, -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+      --space-xs:  4px;
+      --space-sm:  8px;
+      --space-md:  16px;
+      --space-lg:  24px;
+      --space-xl:  32px;
+      --space-2xl: 48px;
+      --space-3xl: 64px;
+
+      --radius-sm:   4px;
+      --radius-md:   8px;
+      --radius-lg:   12px;
+      --radius-xl:   24px;
+      --radius-full: 9999px;
+
+      --shadow-xs: 0 1px 2px rgba(0,0,0,0.08);
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.15);
+      --shadow-lg: 0 8px 24px rgba(0,0,0,0.18);
+
+      --ease-default:     cubic-bezier(0.4, 0, 0.2, 1);
+      --ease-decelerate:  cubic-bezier(0, 0, 0.2, 1);
+      --ease-accelerate:  cubic-bezier(0.4, 0, 1, 1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-sans);
+      font-size: 16px;
+      line-height: 1.5;
+      color: var(--color-text);
+      background: var(--color-bg);
+    }
+
+    /* ── Layout ── */
+    .page { max-width: 1100px; margin: 0 auto; padding: var(--space-3xl) var(--space-xl); }
+
+    section { margin-bottom: var(--space-3xl); }
+
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.015em;
+      line-height: 1.25;
+      padding-bottom: var(--space-sm);
+      border-bottom: 1px solid var(--color-border);
+      margin-bottom: var(--space-lg);
+    }
+
+    .row   { display: flex; flex-wrap: wrap; gap: var(--space-md); align-items: flex-start; }
+    .col   { display: flex; flex-direction: column; gap: var(--space-md); }
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-xl); }
+    .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-md); }
+    .grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-md); }
+    .grid5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: var(--space-md); }
+
+    /* ── Header ── */
+    .page-header { margin-bottom: var(--space-3xl); }
+    .page-header h1 {
+      font-size: 2.25rem;
+      font-weight: 700;
+      line-height: 1.15;
+      letter-spacing: -0.025em;
+    }
+    .page-header p { color: var(--color-muted); margin-top: var(--space-sm); font-size: 15px; }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 10px;
+      background: var(--color-primary-subtle);
+      color: var(--color-primary);
+      border-radius: var(--radius-full);
+      font-size: 12px;
+      font-weight: 500;
+      margin-top: var(--space-sm);
+    }
+
+    /* ── Color swatches ── */
+    .color-group { margin-bottom: var(--space-lg); }
+    .color-group-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--color-muted);
+      margin-bottom: var(--space-sm);
+    }
+    .swatch {
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border);
+      overflow: hidden;
+    }
+    .swatch-block { height: 72px; }
+    .swatch-info  { padding: var(--space-sm); background: var(--color-surface); }
+    .swatch-name  { font-size: 13px; font-weight: 500; }
+    .swatch-hex   { font-family: var(--font-mono); font-size: 11px; color: var(--color-muted); margin-top: 2px; }
+
+    /* ── Typography ── */
+    .type-row {
+      padding: var(--space-md);
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+    }
+    .type-meta {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--color-muted);
+      margin-top: var(--space-xs);
+    }
+
+    /* ── Spacing ── */
+    .space-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      padding: 10px 0;
+      border-bottom: 1px solid var(--color-border);
+    }
+    .space-bar {
+      height: 20px;
+      background: var(--color-primary-subtle);
+      border-left: 3px solid var(--color-primary);
+      flex-shrink: 0;
+    }
+    .space-label { font-family: var(--font-mono); font-size: 12px; min-width: 32px; color: var(--color-primary); font-weight: 500; }
+    .space-value { font-family: var(--font-mono); font-size: 12px; color: var(--color-muted); }
+
+    /* ── Radius ── */
+    .radius-item { display: flex; flex-direction: column; align-items: center; gap: var(--space-sm); }
+    .radius-box {
+      width: 72px; height: 72px;
+      background: var(--color-primary-subtle);
+      border: 2px solid var(--color-primary);
+    }
+    .radius-label { font-size: 12px; font-weight: 500; text-align: center; }
+    .radius-value { font-family: var(--font-mono); font-size: 11px; color: var(--color-muted); text-align: center; }
+
+    /* ── Shadow ── */
+    .shadow-item { display: flex; flex-direction: column; align-items: center; gap: var(--space-sm); }
+    .shadow-box {
+      width: 72px; height: 72px;
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+    }
+    .shadow-label { font-size: 12px; font-weight: 500; text-align: center; }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 20px;
+      border-radius: var(--radius-md);
+      font-family: var(--font-sans);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: background-color 100ms var(--ease-default),
+                  border-color     100ms var(--ease-default),
+                  color            100ms var(--ease-default);
+      text-decoration: none;
+    }
+    .btn-primary   { background: var(--color-primary); color: #fff; }
+    .btn-primary:hover { background: var(--color-primary-hover); }
+    .btn-secondary { background: transparent; color: var(--color-primary); border: 1px solid var(--color-primary); }
+    .btn-secondary:hover { background: var(--color-primary-subtle); }
+    .btn-ghost    { background: transparent; color: var(--color-muted); border: 1px solid var(--color-border); }
+    .btn-ghost:hover { background: var(--color-surface); }
+    .btn-danger   { background: var(--color-error); color: #fff; }
+    .btn-danger:hover { background: #b52920; }
+    .btn[disabled] { background: var(--color-surface); color: var(--color-muted); cursor: not-allowed; border: 1px solid var(--color-border); }
+
+    .btn-sm { padding: 6px 12px; font-size: 13px; }
+    .btn-lg { padding: 14px 28px; font-size: 16px; }
+
+    /* ── Badges ── */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: var(--radius-full);
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+    }
+    .card-title   { font-size: 1.125rem; font-weight: 700; margin-bottom: var(--space-sm); }
+    .card-body    { font-size: 14px; color: var(--color-muted); margin-bottom: var(--space-lg); line-height: 1.5; }
+
+    /* ── Input ── */
+    .field { display: flex; flex-direction: column; gap: var(--space-xs); }
+    .field label { font-size: 14px; font-weight: 500; }
+    .field .hint { font-size: 12px; color: var(--color-muted); }
+    .field .error-msg { font-size: 12px; color: var(--color-error); }
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    select {
+      display: block;
+      width: 100%;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+      font-family: var(--font-sans);
+      font-size: 14px;
+      color: var(--color-text);
+      background: var(--color-bg);
+      outline: none;
+      transition: border-color 200ms var(--ease-default);
+    }
+    input:focus, select:focus { border: 2px solid var(--color-primary); padding: 9px 13px; }
+    input.input-error { border-color: var(--color-error); }
+
+    /* ── Motion demo ── */
+    .motion-track {
+      padding: var(--space-md);
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+    }
+    .motion-label { font-size: 13px; font-weight: 500; margin-bottom: var(--space-sm); }
+    .motion-bar {
+      height: 8px;
+      border-radius: var(--radius-full);
+      background: var(--color-primary);
+      width: 40%;
+      transition-property: width;
+    }
+    .motion-track:hover .motion-bar { width: 100%; }
+
+    /* ── Sub-labels ── */
+    .sub { font-size: 13px; font-weight: 500; color: var(--color-muted); margin-bottom: var(--space-sm); }
+
+    /* ── Divider ── */
+    hr { border: none; border-top: 1px solid var(--color-border); margin: var(--space-xl) 0; }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--color-border);
+      padding-top: var(--space-lg);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--color-muted);
+    }
+    footer code { font-family: var(--font-mono); }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ── Header ── -->
+  <header class="page-header">
+    <h1>Ops Design System</h1>
+    <p>Referência visual de tokens e componentes — <code style="font-family:var(--font-mono);font-size:13px;">design/DESIGN.md</code></p>
+    <span class="pill">v1.0.0</span>
+  </header>
+
+  <!-- ── Colors ── -->
+  <section>
+    <h2 class="section-title">Colors</h2>
+
+    <div class="color-group">
+      <div class="color-group-label">Primary</div>
+      <div class="grid4">
+        <div class="swatch">
+          <div class="swatch-block" style="background:#1A73E8;"></div>
+          <div class="swatch-info"><div class="swatch-name">default</div><div class="swatch-hex">#1A73E8</div></div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-block" style="background:#1557B0;"></div>
+          <div class="swatch-info"><div class="swatch-name">hover</div><div class="swatch-hex">#1557B0</div></div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-block" style="background:#0D47A1;"></div>
+          <div class="swatch-info"><div class="swatch-name">active</div><div class="swatch-hex">#0D47A1</div></div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-block" style="background:#E8F0FE;"></div>
+          <div class="swatch-info"><div class="swatch-name">subtle</div><div class="swatch-hex">#E8F0FE</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="color-group">
+      <div class="color-group-label">Neutral</div>
+      <div class="grid5">
+        <div class="swatch">
+          <div class="swatch-block" style="background:#FFFFFF;border-bottom:1px solid #DADCE0;"></div>
+          <div class="swatch-info"><div class="swatch-name">background</div><div class="swatch-hex">#FFFFFF</div></div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-block" style="background:#F8F9FA;"></div>
+          <div class="swatch-info"><div class="swatch-name">surface</div><div class="swatch-hex">#F8F9FA</div></div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-block" style="background:#DADCE0;"></div>
+          <div class="swatch-info"><div class="swatch-name">border</div><div class="swatch-hex">#DADCE0</div></div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-block" style="background:#5F6368;"></div>
+          <div class="swatch-info"><div class="swatch-name">muted</div><div class="swatch-hex">#5F6368</div></div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-block" style="background:#202124;"></div>
+          <div class="swatch-info"><div class="swatch-name">text</div><div class="swatch-hex">#202124</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="color-group">
+      <div class="color-group-label">Feedback &amp; Accent</div>
+      <div class="grid4">
+        <div class="swatch">
+          <div class="swatch-block" style="background:#1E8E3E;"></div>
+          <div class="swatch-info"><div class="swatch-name">success</div><div class="swatch-hex">#1E8E3E</div></div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-block" style="background:#F9AB00;"></div>
+          <div class="swatch-info"><div class="swatch-name">warning</div><div class="swatch-hex">#F9AB00</div></div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-block" style="background:#D93025;"></div>
+          <div class="swatch-info"><div class="swatch-name">error</div><div class="swatch-hex">#D93025</div></div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-block" style="background:#E8710A;"></div>
+          <div class="swatch-info"><div class="swatch-name">accent</div><div class="swatch-hex">#E8710A</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Typography ── -->
+  <section>
+    <h2 class="section-title">Typography</h2>
+    <div class="col">
+      <div class="type-row">
+        <div style="font-size:2.25rem;font-weight:700;line-height:1.15;letter-spacing:-0.025em;">H1 — Interface Ops</div>
+        <div class="type-meta">h1 · 2.25rem / 700 / lh 1.15 / ls -0.025em · Inter</div>
+      </div>
+      <div class="type-row">
+        <div style="font-size:1.875rem;font-weight:700;line-height:1.2;letter-spacing:-0.02em;">H2 — Design System</div>
+        <div class="type-meta">h2 · 1.875rem / 700 / lh 1.2 / ls -0.02em · Inter</div>
+      </div>
+      <div class="type-row">
+        <div style="font-size:1.5rem;font-weight:700;line-height:1.25;letter-spacing:-0.015em;">H3 — Componentes e Tokens</div>
+        <div class="type-meta">h3 · 1.5rem / 700 / lh 1.25 / ls -0.015em · Inter</div>
+      </div>
+      <div class="type-row">
+        <div style="font-size:1.25rem;font-weight:700;line-height:1.3;letter-spacing:-0.01em;">H4 — Escala tipográfica</div>
+        <div class="type-meta">h4 · 1.25rem / 700 / lh 1.3 / ls -0.01em · Inter</div>
+      </div>
+      <div class="type-row">
+        <div style="font-size:16px;font-weight:400;line-height:1.5;">Body — Interface limpa e profissional com foco em clareza e usabilidade. Paleta neutra com azul primário de alta confiança, tipografia legível e espaçamento generoso.</div>
+        <div class="type-meta">body · 16px / 400 / lh 1.5 · Inter</div>
+      </div>
+      <div class="type-row">
+        <div style="font-size:14px;font-weight:500;line-height:1.4;color:var(--color-muted);">Label — E-mail, Nome completo, Data de criação</div>
+        <div class="type-meta">label · 14px / 500 / lh 1.4 · Inter</div>
+      </div>
+      <div class="type-row">
+        <div style="font-family:var(--font-mono);font-size:14px;font-weight:400;line-height:1.6;">code · const primary = '#1A73E8'</div>
+        <div class="type-meta">code · 14px / 400 / lh 1.6 · JetBrains Mono</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Spacing ── -->
+  <section>
+    <h2 class="section-title">Spacing <span style="font-size:13px;font-weight:400;color:var(--color-muted);">— base 8px</span></h2>
+    <div style="max-width:500px;">
+      <div class="space-row"><div class="space-bar" style="width:4px;"></div>  <span class="space-label">xs</span>  <span class="space-value">4px</span></div>
+      <div class="space-row"><div class="space-bar" style="width:8px;"></div>  <span class="space-label">sm</span>  <span class="space-value">8px</span></div>
+      <div class="space-row"><div class="space-bar" style="width:16px;"></div> <span class="space-label">md</span>  <span class="space-value">16px</span></div>
+      <div class="space-row"><div class="space-bar" style="width:24px;"></div> <span class="space-label">lg</span>  <span class="space-value">24px</span></div>
+      <div class="space-row"><div class="space-bar" style="width:32px;"></div> <span class="space-label">xl</span>  <span class="space-value">32px</span></div>
+      <div class="space-row"><div class="space-bar" style="width:48px;"></div> <span class="space-label">2xl</span> <span class="space-value">48px</span></div>
+      <div class="space-row"><div class="space-bar" style="width:64px;"></div> <span class="space-label">3xl</span> <span class="space-value">64px</span></div>
+    </div>
+  </section>
+
+  <!-- ── Radius + Shadow ── -->
+  <div class="grid2" style="margin-bottom:var(--space-3xl);">
+
+    <section style="margin-bottom:0;">
+      <h2 class="section-title">Border Radius</h2>
+      <div class="grid3" style="gap:var(--space-lg);">
+        <div class="radius-item">
+          <div class="radius-box" style="border-radius:4px;"></div>
+          <div class="radius-label">sm</div><div class="radius-value">4px</div>
+        </div>
+        <div class="radius-item">
+          <div class="radius-box" style="border-radius:8px;"></div>
+          <div class="radius-label">md</div><div class="radius-value">8px</div>
+        </div>
+        <div class="radius-item">
+          <div class="radius-box" style="border-radius:12px;"></div>
+          <div class="radius-label">lg</div><div class="radius-value">12px</div>
+        </div>
+        <div class="radius-item">
+          <div class="radius-box" style="border-radius:24px;"></div>
+          <div class="radius-label">xl</div><div class="radius-value">24px</div>
+        </div>
+        <div class="radius-item">
+          <div class="radius-box" style="border-radius:9999px;"></div>
+          <div class="radius-label">full</div><div class="radius-value">9999px</div>
+        </div>
+      </div>
+    </section>
+
+    <section style="margin-bottom:0;">
+      <h2 class="section-title">Shadow</h2>
+      <div class="grid3" style="gap:var(--space-lg);">
+        <div class="shadow-item">
+          <div class="shadow-box" style="border:1px solid var(--color-border);"></div>
+          <div class="shadow-label">none</div>
+        </div>
+        <div class="shadow-item">
+          <div class="shadow-box" style="box-shadow:var(--shadow-xs);"></div>
+          <div class="shadow-label">xs</div>
+        </div>
+        <div class="shadow-item">
+          <div class="shadow-box" style="box-shadow:var(--shadow-sm);"></div>
+          <div class="shadow-label">sm</div>
+        </div>
+        <div class="shadow-item">
+          <div class="shadow-box" style="box-shadow:var(--shadow-md);"></div>
+          <div class="shadow-label">md</div>
+        </div>
+        <div class="shadow-item">
+          <div class="shadow-box" style="box-shadow:var(--shadow-lg);"></div>
+          <div class="shadow-label">lg</div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ── Components ── -->
+  <section>
+    <h2 class="section-title">Components</h2>
+
+    <!-- Buttons -->
+    <div style="margin-bottom:var(--space-xl);">
+      <div class="sub">Buttons</div>
+      <div class="row" style="margin-bottom:var(--space-sm);">
+        <button class="btn btn-primary">Criar projeto</button>
+        <button class="btn btn-secondary">Cancelar</button>
+        <button class="btn btn-ghost">Saiba mais</button>
+        <button class="btn btn-danger">Excluir</button>
+        <button class="btn btn-primary" disabled>Indisponível</button>
+      </div>
+      <div class="row">
+        <button class="btn btn-primary btn-sm">Pequeno</button>
+        <button class="btn btn-primary">Médio</button>
+        <button class="btn btn-primary btn-lg">Grande</button>
+      </div>
+    </div>
+
+    <!-- Badges -->
+    <div style="margin-bottom:var(--space-xl);">
+      <div class="sub">Badges</div>
+      <div class="row">
+        <span class="badge" style="background:#E8F5EC;color:#1E8E3E;">
+          <svg width="6" height="6" viewBox="0 0 6 6"><circle cx="3" cy="3" r="3" fill="currentColor"/></svg>
+          Sucesso
+        </span>
+        <span class="badge" style="background:#FEF7E0;color:#B07800;">
+          <svg width="6" height="6" viewBox="0 0 6 6"><circle cx="3" cy="3" r="3" fill="currentColor"/></svg>
+          Atenção
+        </span>
+        <span class="badge" style="background:#FDEDEC;color:#D93025;">
+          <svg width="6" height="6" viewBox="0 0 6 6"><circle cx="3" cy="3" r="3" fill="currentColor"/></svg>
+          Erro
+        </span>
+        <span class="badge" style="background:#E8F0FE;color:#1A73E8;">
+          <svg width="6" height="6" viewBox="0 0 6 6"><circle cx="3" cy="3" r="3" fill="currentColor"/></svg>
+          Info
+        </span>
+        <span class="badge" style="background:#F1F3F4;color:#5F6368;">
+          <svg width="6" height="6" viewBox="0 0 6 6"><circle cx="3" cy="3" r="3" fill="currentColor"/></svg>
+          Neutro
+        </span>
+        <span class="badge" style="background:#FEF3EA;color:#E8710A;">
+          <svg width="6" height="6" viewBox="0 0 6 6"><circle cx="3" cy="3" r="3" fill="currentColor"/></svg>
+          Destaque
+        </span>
+      </div>
+    </div>
+
+    <!-- Card + Form -->
+    <div class="grid2">
+      <div>
+        <div class="sub">Card</div>
+        <div class="card" style="box-shadow:var(--shadow-sm);">
+          <div class="card-title">Novo projeto</div>
+          <div class="card-body">Configure os detalhes do projeto antes de começar. Você pode editar essas informações depois.</div>
+          <div class="row">
+            <button class="btn btn-primary btn-sm">Criar projeto</button>
+            <button class="btn btn-ghost btn-sm">Cancelar</button>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="sub">Form / Input</div>
+        <div class="col">
+          <div class="field">
+            <label>E-mail</label>
+            <input type="email" placeholder="voce@exemplo.com">
+          </div>
+          <div class="field">
+            <label>Nome do projeto</label>
+            <input type="text" value="Design System Ops" style="border:2px solid var(--color-primary);padding:9px 13px;">
+            <span class="hint">Foco ativo — borda 2px primary</span>
+          </div>
+          <div class="field">
+            <label>URL</label>
+            <input type="text" class="input-error" value="exemplo inválido">
+            <span class="error-msg">URL inválida. Use o formato https://...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Motion ── -->
+  <section>
+    <h2 class="section-title">Motion <span style="font-size:13px;font-weight:400;color:var(--color-muted);">— passe o mouse para animar</span></h2>
+    <div class="grid2">
+      <div>
+        <div class="sub">Durações</div>
+        <div class="col">
+          <div class="motion-track">
+            <div class="motion-label">instant · 100ms</div>
+            <div class="motion-bar" style="transition-duration:100ms;transition-timing-function:var(--ease-default);"></div>
+          </div>
+          <div class="motion-track">
+            <div class="motion-label">fast · 200ms</div>
+            <div class="motion-bar" style="transition-duration:200ms;transition-timing-function:var(--ease-default);"></div>
+          </div>
+          <div class="motion-track">
+            <div class="motion-label">normal · 300ms</div>
+            <div class="motion-bar" style="transition-duration:300ms;transition-timing-function:var(--ease-default);"></div>
+          </div>
+          <div class="motion-track">
+            <div class="motion-label">slow · 500ms</div>
+            <div class="motion-bar" style="transition-duration:500ms;transition-timing-function:var(--ease-default);"></div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="sub">Easings (300ms fixo)</div>
+        <div class="col">
+          <div class="motion-track">
+            <div class="motion-label">default · ease-in-out</div>
+            <div class="motion-bar" style="transition-duration:300ms;transition-timing-function:cubic-bezier(0.4,0,0.2,1);"></div>
+          </div>
+          <div class="motion-track">
+            <div class="motion-label">decelerate · ease-out (entrada)</div>
+            <div class="motion-bar" style="transition-duration:300ms;transition-timing-function:cubic-bezier(0,0,0.2,1);"></div>
+          </div>
+          <div class="motion-track">
+            <div class="motion-label">accelerate · ease-in (saída)</div>
+            <div class="motion-bar" style="transition-duration:300ms;transition-timing-function:cubic-bezier(0.4,0,1,1);"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Footer ── -->
+  <footer>
+    <span>Ops Design System · v1.0.0 · 2026-06-08</span>
+    <code>design/DESIGN.md</code>
+  </footer>
+
+</div>
+</body>
+</html>

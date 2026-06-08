@@ -1,4 +1,8 @@
 ---
+version: "1.0.0"
+product: "Ops"
+updated: "2026-06-08"
+
 colors:
   primary:
     default: "#1A73E8"
@@ -20,11 +24,19 @@ colors:
     default: "#E8710A"
 
 typography:
+  fontFamily:
+    sans: "Inter, sans-serif"
+    mono: "JetBrains Mono, monospace"
   heading:
     fontFamily: "Inter, sans-serif"
     fontWeight: 700
     lineHeight: 1.2
     letterSpacing: "-0.01em"
+    scale:
+      h1: { size: "2.25rem", lineHeight: 1.15, letterSpacing: "-0.025em" }
+      h2: { size: "1.875rem", lineHeight: 1.2,  letterSpacing: "-0.02em" }
+      h3: { size: "1.5rem",   lineHeight: 1.25, letterSpacing: "-0.015em" }
+      h4: { size: "1.25rem",  lineHeight: 1.3,  letterSpacing: "-0.01em" }
   body:
     fontFamily: "Inter, sans-serif"
     fontSize: "16px"
@@ -56,6 +68,31 @@ radius:
   lg: "12px"
   xl: "24px"
   full: "9999px"
+
+shadow:
+  none: "none"
+  xs: "0 1px 2px rgba(0,0,0,0.08)"
+  sm: "0 1px 3px rgba(0,0,0,0.12)"
+  md: "0 4px 12px rgba(0,0,0,0.15)"
+  lg: "0 8px 24px rgba(0,0,0,0.18)"
+
+animation:
+  duration:
+    instant: "100ms"
+    fast: "200ms"
+    normal: "300ms"
+    slow: "500ms"
+  easing:
+    default: "cubic-bezier(0.4, 0, 0.2, 1)"
+    decelerate: "cubic-bezier(0, 0, 0.2, 1)"
+    accelerate: "cubic-bezier(0.4, 0, 1, 1)"
+
+breakpoint:
+  sm: "640px"
+  md: "768px"
+  lg: "1024px"
+  xl: "1280px"
+  2xl: "1536px"
 
 components:
   button:
@@ -90,7 +127,7 @@ components:
 
 ## Overview
 
-Interface limpa e profissional com foco em clareza e usabilidade. Paleta neutra com azul primário de alta confiança, tipografia legível e espaçamento generoso. Destaque em hierarquia visual clara e feedback explícito ao usuário.
+Interface limpa e profissional com foco em clareza e usabilidade. Paleta neutra com azul primário de alta confiança, tipografia legível e espaçamento generoso. Hierarquia visual clara e feedback explícito ao usuário.
 
 ## Colors
 
@@ -102,14 +139,14 @@ Interface limpa e profissional com foco em clareza e usabilidade. Paleta neutra 
 
 **Acento** — use com parcimônia para destacar elementos secundários importantes.
 
-Contraste mínimo de 4.5:1 para texto normal (WCAG AA). Texto grande: 3:1.
+Contraste mínimo de 4.5:1 para texto normal (WCAG AA). Texto grande: 3:1. Ver `accessibility/wcag.md` para critérios completos.
 
 ## Typography
 
 Fonte única **Inter** para consistência. JetBrains Mono exclusivamente para código.
 
-- `heading` — hierarquia de títulos (h1–h4), sempre negrito
-- `body` — leitura corrida, 16px base
+- `heading` — hierarquia h1–h4, sempre bold (700). Use `rem` — nunca `px` fixo (garante zoom 200%)
+- `body` — leitura corrida, 16px base, lineHeight 1.5
 - `label` — labels de formulário, badges, metadados
 - `code` — inline code e blocos de código
 
@@ -122,15 +159,17 @@ Grade de 12 colunas em desktop, 4 colunas em mobile. Escala de espaçamento base
 - Gap interno de componentes: `sm` (8px) a `md` (16px)
 - Separação entre seções: `xl` (32px) a `2xl` (48px)
 - Margens laterais em mobile: `md` (16px)
-- Container máximo: 1280px, centralizado
+- Container máximo: 1280px (`breakpoint.xl`), centralizado
 
 ## Elevation & Depth
 
 Usar sombras com moderação — profundidade deve ser funcional, não decorativa.
 
-- **Nível 0** — sem sombra (cards em surface)
-- **Nível 1** — `0 1px 3px rgba(0,0,0,0.12)` (dropdowns, tooltips)
-- **Nível 2** — `0 4px 12px rgba(0,0,0,0.15)` (modais, popovers)
+- **`none`** — sem sombra (cards em surface, elementos planos)
+- **`xs`** — realce sutil (hover de itens de lista)
+- **`sm`** — cards e painéis em destaque
+- **`md`** — dropdowns, tooltips
+- **`lg`** — modais, popovers
 
 ## Shapes
 
@@ -141,20 +180,34 @@ Arredondamento progressivo conforme o tamanho do componente:
 - Badges e chips: `full` (9999px) — elementos de status
 - Nunca misturar raios muito diferentes na mesma tela
 
+## Motion
+
+Use os tokens de `animation` para toda transição — nunca durações ou easings ad-hoc. Saídas sempre mais rápidas que entradas (o usuário já sabe o que vai sumir).
+
+- Hover e feedback de clique: `instant` (100ms)
+- Transições de estado de componente: `fast` (200ms)
+- Padrão geral: `normal` (300ms)
+- Entradas de tela, modais, drawers: `slow` (500ms)
+
+Sempre respeitar `prefers-reduced-motion`. Ver `animation.md` para padrões por tipo.
+
 ## Components
 
 **Botão primário** — fundo `primary.default`, texto branco, `radius.md`. Hover escurece para `primary.hover`.
 
 **Botão secundário** — borda `primary.default`, texto `primary.default`, fundo transparente. Hover preenche com `primary.subtle`.
 
-**Card** — fundo branco, borda `neutral.border`, padding `lg`. Sem sombra por padrão.
+**Card** — fundo branco, borda `neutral.border`, padding `lg`. Sombra `sm` quando em destaque.
 
 **Input** — borda `neutral.border`, focus troca para borda dupla `primary.default` para acessibilidade clara.
+
+Estados obrigatórios para componentes interativos: default, hover, focus, loading, erro, sucesso, disabled, empty state.
 
 ## Do's and Don'ts
 
 **Fazer:**
 - Usar `spacing` tokens para todos os espaçamentos — nunca valores arbitrários
+- Usar `animation` tokens para toda transição — nunca durações ad-hoc
 - Preferir `surface` como fundo de containers secundários, não cinzas customizados
 - Manter hierarquia tipográfica consistente (heading → body → label)
 - Testar contraste antes de finalizar qualquer combinação cor/texto
@@ -164,3 +217,4 @@ Arredondamento progressivo conforme o tamanho do componente:
 - Não criar novas variações de componentes sem antes verificar se alguma existente atende
 - Não misturar mais de 3 pesos tipográficos na mesma tela
 - Não usar sombras em elementos planos ou de status
+- Não ignorar `prefers-reduced-motion`
