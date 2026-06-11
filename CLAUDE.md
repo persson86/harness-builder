@@ -4,11 +4,11 @@ Behavioral guidelines to reduce common LLM coding mistakes. Merge with project-s
 
 ## Scope
 
-**Escopo padrão:** apenas a pasta do projeto.
+**Default scope:** the project folder only.
 
-**Exceções (read-only):** liste aqui caminhos externos que o agente pode ler mas não modificar (ex.: um vault de notas/referência). Bloqueie escrita e deleção neles pelo harness.
+**Exceptions (read-only):** list external paths the agent may read but not modify (e.g., a notes/reference vault). Block writes and deletions to those paths via the harness.
 
-**Regra:** qualquer operação fora do escopo padrão (ler, editar, criar, deletar) exige confirmação explícita no chat antes de executar. Nunca acesse arquivos fora do escopo por conveniência ou por contexto implícito.
+**Rule:** any operation outside the default scope (read, edit, create, delete) requires explicit confirmation in the chat before executing. Never access files outside the scope for convenience or implicit context.
 
 **Tradeoff:** These guidelines bias toward caution over speed. For trivial tasks, use judgment.
 

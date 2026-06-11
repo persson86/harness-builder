@@ -1,6 +1,6 @@
 ---
 version: "1.0.0"
-product: "Ops"
+product: "my-product"
 updated: "2026-06-08"
 
 colors:
@@ -127,94 +127,94 @@ components:
 
 ## Overview
 
-Interface limpa e profissional com foco em clareza e usabilidade. Paleta neutra com azul primário de alta confiança, tipografia legível e espaçamento generoso. Hierarquia visual clara e feedback explícito ao usuário.
+Clean, professional interface focused on clarity and usability. Neutral palette with a high-trust primary blue, legible typography, and generous spacing. Clear visual hierarchy and explicit user feedback.
 
 ## Colors
 
-**Primário (`#1A73E8`)** — ações principais, links, estados ativos. Nunca usar em backgrounds grandes.
+**Primary (`#1A73E8`)** — primary actions, links, active states. Never use as background on large areas.
 
-**Neutros** — base de superfícies e textos. `surface` (#F8F9FA) para containers secundários; `text` (#202124) para corpo de texto.
+**Neutrals** — base for surfaces and text. `surface` (#F8F9FA) for secondary containers; `text` (#202124) for body text.
 
-**Feedback** — usar apenas para estados de sistema (sucesso, erro, alerta). Não decorativo.
+**Feedback** — use only for system states (success, error, warning). Not decorative.
 
-**Acento** — use com parcimônia para destacar elementos secundários importantes.
+**Accent** — use sparingly to highlight important secondary elements.
 
-Contraste mínimo de 4.5:1 para texto normal (WCAG AA). Texto grande: 3:1. Ver `accessibility/wcag.md` para critérios completos.
+Minimum contrast of 4.5:1 for normal text (WCAG AA). Large text: 3:1. See `accessibility/wcag.md` for full criteria.
 
 ## Typography
 
-Fonte única **Inter** para consistência. JetBrains Mono exclusivamente para código.
+Single typeface **Inter** for consistency. JetBrains Mono exclusively for code.
 
-- `heading` — hierarquia h1–h4, sempre bold (700). Use `rem` — nunca `px` fixo (garante zoom 200%)
-- `body` — leitura corrida, 16px base, lineHeight 1.5
-- `label` — labels de formulário, badges, metadados
-- `code` — inline code e blocos de código
+- `heading` — h1–h4 hierarchy, always bold (700). Use `rem` — never fixed `px` (ensures 200% zoom)
+- `body` — running text, 16px base, lineHeight 1.5
+- `label` — form labels, badges, metadata
+- `code` — inline code and code blocks
 
-Nunca misturar mais de duas famílias tipográficas na mesma tela.
+Never mix more than two typeface families on the same screen.
 
 ## Layout
 
-Grade de 12 colunas em desktop, 4 colunas em mobile. Escala de espaçamento baseada em múltiplos de **8px**.
+12-column grid on desktop, 4 columns on mobile. Spacing scale based on multiples of **8px**.
 
-- Gap interno de componentes: `sm` (8px) a `md` (16px)
-- Separação entre seções: `xl` (32px) a `2xl` (48px)
-- Margens laterais em mobile: `md` (16px)
-- Container máximo: 1280px (`breakpoint.xl`), centralizado
+- Component internal gap: `sm` (8px) to `md` (16px)
+- Section separation: `xl` (32px) to `2xl` (48px)
+- Mobile side margins: `md` (16px)
+- Max container: 1280px (`breakpoint.xl`), centered
 
 ## Elevation & Depth
 
-Usar sombras com moderação — profundidade deve ser funcional, não decorativa.
+Use shadows sparingly — depth should be functional, not decorative.
 
-- **`none`** — sem sombra (cards em surface, elementos planos)
-- **`xs`** — realce sutil (hover de itens de lista)
-- **`sm`** — cards e painéis em destaque
+- **`none`** — no shadow (cards on surface, flat elements)
+- **`xs`** — subtle highlight (list item hover)
+- **`sm`** — cards and highlighted panels
 - **`md`** — dropdowns, tooltips
-- **`lg`** — modais, popovers
+- **`lg`** — modals, popovers
 
 ## Shapes
 
-Arredondamento progressivo conforme o tamanho do componente:
+Progressive rounding as component size increases:
 
-- Inputs e botões: `md` (8px) — estrutural, não suave demais
-- Cards e painéis: `lg` (12px) — contenção amigável
-- Badges e chips: `full` (9999px) — elementos de status
-- Nunca misturar raios muito diferentes na mesma tela
+- Inputs and buttons: `md` (8px) — structural, not overly soft
+- Cards and panels: `lg` (12px) — friendly containment
+- Badges and chips: `full` (9999px) — status elements
+- Never mix very different radii on the same screen
 
 ## Motion
 
-Use os tokens de `animation` para toda transição — nunca durações ou easings ad-hoc. Saídas sempre mais rápidas que entradas (o usuário já sabe o que vai sumir).
+Use `animation` tokens for all transitions — never ad-hoc durations or easings. Exits always faster than entrances (the user already knows what's leaving).
 
-- Hover e feedback de clique: `instant` (100ms)
-- Transições de estado de componente: `fast` (200ms)
-- Padrão geral: `normal` (300ms)
-- Entradas de tela, modais, drawers: `slow` (500ms)
+- Hover and click feedback: `instant` (100ms)
+- Component state transitions: `fast` (200ms)
+- General default: `normal` (300ms)
+- Screen entrances, modals, drawers: `slow` (500ms)
 
-Sempre respeitar `prefers-reduced-motion`. Ver `animation.md` para padrões por tipo.
+Always respect `prefers-reduced-motion`. See `animation.md` for patterns by type.
 
 ## Components
 
-**Botão primário** — fundo `primary.default`, texto branco, `radius.md`. Hover escurece para `primary.hover`.
+**Primary button** — `primary.default` background, white text, `radius.md`. Hover darkens to `primary.hover`.
 
-**Botão secundário** — borda `primary.default`, texto `primary.default`, fundo transparente. Hover preenche com `primary.subtle`.
+**Secondary button** — `primary.default` border, `primary.default` text, transparent background. Hover fills with `primary.subtle`.
 
-**Card** — fundo branco, borda `neutral.border`, padding `lg`. Sombra `sm` quando em destaque.
+**Card** — white background, `neutral.border` border, `lg` padding. `sm` shadow when elevated.
 
-**Input** — borda `neutral.border`, focus troca para borda dupla `primary.default` para acessibilidade clara.
+**Input** — `neutral.border` border; on focus switches to double `primary.default` border for clear accessibility.
 
-Estados obrigatórios para componentes interativos: default, hover, focus, loading, erro, sucesso, disabled, empty state.
+Required states for interactive components: default, hover, focus, loading, error, success, disabled, empty state.
 
 ## Do's and Don'ts
 
-**Fazer:**
-- Usar `spacing` tokens para todos os espaçamentos — nunca valores arbitrários
-- Usar `animation` tokens para toda transição — nunca durações ad-hoc
-- Preferir `surface` como fundo de containers secundários, não cinzas customizados
-- Manter hierarquia tipográfica consistente (heading → body → label)
-- Testar contraste antes de finalizar qualquer combinação cor/texto
+**Do:**
+- Use `spacing` tokens for all spacing — never arbitrary values
+- Use `animation` tokens for all transitions — never ad-hoc durations
+- Prefer `surface` as background for secondary containers, not custom greys
+- Maintain consistent typographic hierarchy (heading → body → label)
+- Test contrast before finalizing any color/text combination
 
-**Não fazer:**
-- Não usar `primary` como cor de fundo em áreas grandes
-- Não criar novas variações de componentes sem antes verificar se alguma existente atende
-- Não misturar mais de 3 pesos tipográficos na mesma tela
-- Não usar sombras em elementos planos ou de status
-- Não ignorar `prefers-reduced-motion`
+**Don't:**
+- Use `primary` as a background color on large areas
+- Create new component variants without first checking if an existing one fits
+- Mix more than 3 typographic weights on the same screen
+- Use shadows on flat or status elements
+- Ignore `prefers-reduced-motion`

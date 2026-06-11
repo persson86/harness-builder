@@ -1,42 +1,42 @@
-# Diretrizes de Animação
+# Animation Guidelines
 
-Princípios e especificações de motion para interfaces nos produtos de Ops. Os valores dos tokens estão em `design/DESIGN.md` → seção `animation`.
-
----
-
-## Princípios
-
-**1. Propositada**
-Toda animação deve ter um propósito funcional: orientar o olhar, comunicar estado, confirmar ação ou criar continuidade entre telas. Animações puramente decorativas são evitadas.
-
-**2. Discreta**
-A animação nunca deve competir com o conteúdo. O usuário não deve perceber a animação — deve perceber o resultado.
-
-**3. Responsiva**
-Animações devem respeitar `prefers-reduced-motion`. Quando o usuário sinaliza preferência por menos movimento, use transições de opacidade ou desative animações não essenciais.
-
-**4. Consistente**
-Use os tokens de `animation` do `DESIGN.md`. Nunca crie durações ou easings ad-hoc.
+Principles and motion specifications for UI interfaces. Token values are in `design/DESIGN.md` → `animation` section.
 
 ---
 
-## Tokens de referência
+## Principles
 
-| Token | Valor | Uso |
+**1. Purposeful**
+Every animation must have a functional purpose: guide attention, communicate state, confirm an action, or create continuity between screens. Purely decorative animations are avoided.
+
+**2. Subtle**
+Animation should never compete with content. The user should not notice the animation — they should notice the result.
+
+**3. Responsive**
+Animations must respect `prefers-reduced-motion`. When the user signals a preference for less motion, use opacity transitions or disable non-essential animations.
+
+**4. Consistent**
+Use the `animation` tokens from `DESIGN.md`. Never create ad-hoc durations or easings.
+
+---
+
+## Reference tokens
+
+| Token | Value | Usage |
 |---|---|---|
-| `animation.duration.instant` | 100ms | Hover, foco, feedback de clique |
-| `animation.duration.fast` | 200ms | Transições de estado de componente |
-| `animation.duration.normal` | 300ms | Padrão para a maioria das animações |
-| `animation.duration.slow` | 500ms | Entradas de tela, modais, drawers |
-| `animation.easing.default` | ease-in-out | Uso geral |
-| `animation.easing.decelerate` | ease-out | Elementos entrando na tela |
-| `animation.easing.accelerate` | ease-in | Elementos saindo da tela |
+| `animation.duration.instant` | 100ms | Hover, focus, click feedback |
+| `animation.duration.fast` | 200ms | Component state transitions |
+| `animation.duration.normal` | 300ms | Default for most animations |
+| `animation.duration.slow` | 500ms | Screen entrances, modals, drawers |
+| `animation.easing.default` | ease-in-out | General use |
+| `animation.easing.decelerate` | ease-out | Elements entering the screen |
+| `animation.easing.accelerate` | ease-in | Elements leaving the screen |
 
 ---
 
-## Padrões por tipo
+## Patterns by type
 
-### Entrada de elemento na tela
+### Element entering the screen
 
 ```css
 opacity: 0 → 1;
@@ -45,9 +45,9 @@ duration: slow (500ms);
 easing: decelerate;
 ```
 
-Usar para: modais, drawers, toasts, painéis laterais, conteúdo carregado assincronamente.
+Use for: modals, drawers, toasts, side panels, async-loaded content.
 
-### Saída de elemento da tela
+### Element leaving the screen
 
 ```css
 opacity: 1 → 0;
@@ -56,9 +56,9 @@ duration: fast (200ms);
 easing: accelerate;
 ```
 
-> Saídas são mais rápidas que entradas — o usuário já sabe o que vai sumir.
+> Exits are faster than entrances — the user already knows what's disappearing.
 
-### Hover de botão / elemento interativo
+### Button / interactive element hover
 
 ```css
 background-color: [color] → [color-hover];
@@ -75,7 +75,7 @@ animation: shimmer 1.5s infinite;
 easing: linear;
 ```
 
-### Feedback de ação (sucesso/erro)
+### Action feedback (success/error)
 
 ```css
 opacity: 0 → 1;
@@ -84,15 +84,15 @@ duration: fast (200ms);
 easing: decelerate;
 ```
 
-### Transição entre telas
+### Screen transition
 
 ```css
-/* Saída da tela atual */
+/* Current screen exit */
 opacity: 1 → 0;
 transform: translateX(0) → translateX(-16px);
 duration: fast (200ms);
 
-/* Entrada da nova tela */
+/* New screen entrance */
 opacity: 0 → 1;
 transform: translateX(16px) → translateX(0);
 duration: normal (300ms);
@@ -100,7 +100,7 @@ duration: normal (300ms);
 
 ---
 
-## Acessibilidade
+## Accessibility
 
 ```css
 @media (prefers-reduced-motion: reduce) {
@@ -113,10 +113,10 @@ duration: normal (300ms);
 
 ---
 
-## O que evitar
+## What to avoid
 
-- ❌ Bounce e spring em elementos funcionais (reservar para momentos de celebração, com parcimônia)
-- ❌ Durações acima de 600ms para qualquer interação corriqueira
-- ❌ Animações em loop sem pausa ou interação do usuário
-- ❌ Paralax pesado em páginas com muito conteúdo
-- ❌ Easing linear para elementos com peso visual (parece mecânico)
+- ❌ Bounce and spring on functional elements (reserve for celebratory moments, sparingly)
+- ❌ Durations above 600ms for any routine interaction
+- ❌ Looping animations without pause or user interaction
+- ❌ Heavy parallax on content-heavy pages
+- ❌ Linear easing on visually heavy elements (feels mechanical)

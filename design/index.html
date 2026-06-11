@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ops Design System</title>
+  <title>Design System</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
   <style>
@@ -288,8 +288,8 @@
 
   <!-- ── Header ── -->
   <header class="page-header">
-    <h1>Ops Design System</h1>
-    <p>Referência visual de tokens e componentes — <code style="font-family:var(--font-mono);font-size:13px;">design/DESIGN.md</code></p>
+    <h1>Design System</h1>
+    <p>Visual reference for tokens and components — <code style="font-family:var(--font-mono);font-size:13px;">design/DESIGN.md</code></p>
     <span class="pill">v1.0.0</span>
   </header>
 
@@ -373,27 +373,27 @@
     <h2 class="section-title">Typography</h2>
     <div class="col">
       <div class="type-row">
-        <div style="font-size:2.25rem;font-weight:700;line-height:1.15;letter-spacing:-0.025em;">H1 — Interface Ops</div>
+        <div style="font-size:2.25rem;font-weight:700;line-height:1.15;letter-spacing:-0.025em;">H1 — Design System</div>
         <div class="type-meta">h1 · 2.25rem / 700 / lh 1.15 / ls -0.025em · Inter</div>
       </div>
       <div class="type-row">
-        <div style="font-size:1.875rem;font-weight:700;line-height:1.2;letter-spacing:-0.02em;">H2 — Design System</div>
+        <div style="font-size:1.875rem;font-weight:700;line-height:1.2;letter-spacing:-0.02em;">H2 — Components & Tokens</div>
         <div class="type-meta">h2 · 1.875rem / 700 / lh 1.2 / ls -0.02em · Inter</div>
       </div>
       <div class="type-row">
-        <div style="font-size:1.5rem;font-weight:700;line-height:1.25;letter-spacing:-0.015em;">H3 — Componentes e Tokens</div>
+        <div style="font-size:1.5rem;font-weight:700;line-height:1.25;letter-spacing:-0.015em;">H3 — Color & Typography</div>
         <div class="type-meta">h3 · 1.5rem / 700 / lh 1.25 / ls -0.015em · Inter</div>
       </div>
       <div class="type-row">
-        <div style="font-size:1.25rem;font-weight:700;line-height:1.3;letter-spacing:-0.01em;">H4 — Escala tipográfica</div>
+        <div style="font-size:1.25rem;font-weight:700;line-height:1.3;letter-spacing:-0.01em;">H4 — Type scale</div>
         <div class="type-meta">h4 · 1.25rem / 700 / lh 1.3 / ls -0.01em · Inter</div>
       </div>
       <div class="type-row">
-        <div style="font-size:16px;font-weight:400;line-height:1.5;">Body — Interface limpa e profissional com foco em clareza e usabilidade. Paleta neutra com azul primário de alta confiança, tipografia legível e espaçamento generoso.</div>
+        <div style="font-size:16px;font-weight:400;line-height:1.5;">Body — Clean, professional interface focused on clarity and usability. Neutral palette with a high-trust primary blue, legible typography, and generous spacing.</div>
         <div class="type-meta">body · 16px / 400 / lh 1.5 · Inter</div>
       </div>
       <div class="type-row">
-        <div style="font-size:14px;font-weight:500;line-height:1.4;color:var(--color-muted);">Label — E-mail, Nome completo, Data de criação</div>
+        <div style="font-size:14px;font-weight:500;line-height:1.4;color:var(--color-muted);">Label — Email, Full name, Created at</div>
         <div class="type-meta">label · 14px / 500 / lh 1.4 · Inter</div>
       </div>
       <div class="type-row">
@@ -405,7 +405,7 @@
 
   <!-- ── Spacing ── -->
   <section>
-    <h2 class="section-title">Spacing <span style="font-size:13px;font-weight:400;color:var(--color-muted);">— base 8px</span></h2>
+    <h2 class="section-title">Spacing <span style="font-size:13px;font-weight:400;color:var(--color-muted);">— 8px base</span></h2>
     <div style="max-width:500px;">
       <div class="space-row"><div class="space-bar" style="width:4px;"></div>  <span class="space-label">xs</span>  <span class="space-value">4px</span></div>
       <div class="space-row"><div class="space-bar" style="width:8px;"></div>  <span class="space-label">sm</span>  <span class="space-value">8px</span></div>
@@ -482,16 +482,16 @@
     <div style="margin-bottom:var(--space-xl);">
       <div class="sub">Buttons</div>
       <div class="row" style="margin-bottom:var(--space-sm);">
-        <button class="btn btn-primary">Criar projeto</button>
-        <button class="btn btn-secondary">Cancelar</button>
-        <button class="btn btn-ghost">Saiba mais</button>
-        <button class="btn btn-danger">Excluir</button>
-        <button class="btn btn-primary" disabled>Indisponível</button>
+        <button class="btn btn-primary">Create project</button>
+        <button class="btn btn-secondary">Cancel</button>
+        <button class="btn btn-ghost">Learn more</button>
+        <button class="btn btn-danger">Delete</button>
+        <button class="btn btn-primary" disabled>Unavailable</button>
       </div>
       <div class="row">
-        <button class="btn btn-primary btn-sm">Pequeno</button>
-        <button class="btn btn-primary">Médio</button>
-        <button class="btn btn-primary btn-lg">Grande</button>
+        <button class="btn btn-primary btn-sm">Small</button>
+        <button class="btn btn-primary">Medium</button>
+        <button class="btn btn-primary btn-lg">Large</button>
       </div>
     </div>
 
@@ -501,15 +501,15 @@
       <div class="row">
         <span class="badge" style="background:#E8F5EC;color:#1E8E3E;">
           <svg width="6" height="6" viewBox="0 0 6 6"><circle cx="3" cy="3" r="3" fill="currentColor"/></svg>
-          Sucesso
+          Success
         </span>
         <span class="badge" style="background:#FEF7E0;color:#B07800;">
           <svg width="6" height="6" viewBox="0 0 6 6"><circle cx="3" cy="3" r="3" fill="currentColor"/></svg>
-          Atenção
+          Warning
         </span>
         <span class="badge" style="background:#FDEDEC;color:#D93025;">
           <svg width="6" height="6" viewBox="0 0 6 6"><circle cx="3" cy="3" r="3" fill="currentColor"/></svg>
-          Erro
+          Error
         </span>
         <span class="badge" style="background:#E8F0FE;color:#1A73E8;">
           <svg width="6" height="6" viewBox="0 0 6 6"><circle cx="3" cy="3" r="3" fill="currentColor"/></svg>
@@ -517,11 +517,11 @@
         </span>
         <span class="badge" style="background:#F1F3F4;color:#5F6368;">
           <svg width="6" height="6" viewBox="0 0 6 6"><circle cx="3" cy="3" r="3" fill="currentColor"/></svg>
-          Neutro
+          Neutral
         </span>
         <span class="badge" style="background:#FEF3EA;color:#E8710A;">
           <svg width="6" height="6" viewBox="0 0 6 6"><circle cx="3" cy="3" r="3" fill="currentColor"/></svg>
-          Destaque
+          Accent
         </span>
       </div>
     </div>
@@ -531,11 +531,11 @@
       <div>
         <div class="sub">Card</div>
         <div class="card" style="box-shadow:var(--shadow-sm);">
-          <div class="card-title">Novo projeto</div>
-          <div class="card-body">Configure os detalhes do projeto antes de começar. Você pode editar essas informações depois.</div>
+          <div class="card-title">New project</div>
+          <div class="card-body">Configure your project details before getting started. You can edit this information later.</div>
           <div class="row">
-            <button class="btn btn-primary btn-sm">Criar projeto</button>
-            <button class="btn btn-ghost btn-sm">Cancelar</button>
+            <button class="btn btn-primary btn-sm">Create project</button>
+            <button class="btn btn-ghost btn-sm">Cancel</button>
           </div>
         </div>
       </div>
@@ -544,18 +544,18 @@
         <div class="sub">Form / Input</div>
         <div class="col">
           <div class="field">
-            <label>E-mail</label>
-            <input type="email" placeholder="voce@exemplo.com">
+            <label>Email</label>
+            <input type="email" placeholder="you@example.com">
           </div>
           <div class="field">
-            <label>Nome do projeto</label>
-            <input type="text" value="Design System Ops" style="border:2px solid var(--color-primary);padding:9px 13px;">
-            <span class="hint">Foco ativo — borda 2px primary</span>
+            <label>Project name</label>
+            <input type="text" value="Design System" style="border:2px solid var(--color-primary);padding:9px 13px;">
+            <span class="hint">Active focus — 2px primary border</span>
           </div>
           <div class="field">
             <label>URL</label>
-            <input type="text" class="input-error" value="exemplo inválido">
-            <span class="error-msg">URL inválida. Use o formato https://...</span>
+            <input type="text" class="input-error" value="invalid-example">
+            <span class="error-msg">Invalid URL. Use https://... format.</span>
           </div>
         </div>
       </div>
@@ -564,10 +564,10 @@
 
   <!-- ── Motion ── -->
   <section>
-    <h2 class="section-title">Motion <span style="font-size:13px;font-weight:400;color:var(--color-muted);">— passe o mouse para animar</span></h2>
+    <h2 class="section-title">Motion <span style="font-size:13px;font-weight:400;color:var(--color-muted);">— hover to animate</span></h2>
     <div class="grid2">
       <div>
-        <div class="sub">Durações</div>
+        <div class="sub">Durations</div>
         <div class="col">
           <div class="motion-track">
             <div class="motion-label">instant · 100ms</div>
@@ -588,18 +588,18 @@
         </div>
       </div>
       <div>
-        <div class="sub">Easings (300ms fixo)</div>
+        <div class="sub">Easings (300ms fixed)</div>
         <div class="col">
           <div class="motion-track">
             <div class="motion-label">default · ease-in-out</div>
             <div class="motion-bar" style="transition-duration:300ms;transition-timing-function:cubic-bezier(0.4,0,0.2,1);"></div>
           </div>
           <div class="motion-track">
-            <div class="motion-label">decelerate · ease-out (entrada)</div>
+            <div class="motion-label">decelerate · ease-out (enter)</div>
             <div class="motion-bar" style="transition-duration:300ms;transition-timing-function:cubic-bezier(0,0,0.2,1);"></div>
           </div>
           <div class="motion-track">
-            <div class="motion-label">accelerate · ease-in (saída)</div>
+            <div class="motion-label">accelerate · ease-in (exit)</div>
             <div class="motion-bar" style="transition-duration:300ms;transition-timing-function:cubic-bezier(0.4,0,1,1);"></div>
           </div>
         </div>
@@ -609,7 +609,7 @@
 
   <!-- ── Footer ── -->
   <footer>
-    <span>Ops Design System · v1.0.0 · 2026-06-08</span>
+    <span>Design System · v1.0.0 · 2026-06-08</span>
     <code>design/DESIGN.md</code>
   </footer>
 

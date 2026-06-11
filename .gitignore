@@ -12,3 +12,4 @@ design/.DS_Store
 !.claude/
 !.claude/settings.example.json
 !statusline-command.sh
+!install.sh

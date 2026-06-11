@@ -1,82 +1,77 @@
-# Regras de Escrita
+# Writing Rules
 
-Decisões técnicas de escrita — consulte este arquivo ao criar ou revisar textos de interface.
-
----
-
-## Verbos e ações
-
-- Use verbos no infinitivo em botões e CTAs: "Salvar", "Enviar", "Cancelar"
-- CTAs primários descrevem o resultado, não a ação mecânica
-  > ✅ "Criar conta" — ❌ "Submeter formulário"
-- Seja específico: evite verbos genéricos sem contexto
-  > ✅ "Excluir projeto" — ❌ "Excluir"
+Technical writing decisions — consult this file when creating or reviewing interface copy.
 
 ---
 
-## Pontuação
+## Verbs and actions
 
-- Use ponto final em mensagens completas (erros, confirmações, instruções)
-- Não use ponto final em títulos, labels, botões e placeholders
-- Evite exclamação — reservado para momentos de celebração genuína, com moderação
-- Reticências só em loading states: "Carregando…", "Salvando…"
-
----
-
-## Capitalização
-
-- Títulos de seção e funcionalidades: apenas a primeira letra maiúscula
-  > ✅ "Configurações de conta" — ❌ "Configurações De Conta"
-- Botões: apenas a primeira letra maiúscula
-  > ✅ "Criar projeto" — ❌ "Criar Projeto"
-- Siglas que não podem ser lidas como uma palavra: sempre em maiúsculas
-  > ✅ CPF, CNPJ, CEP, URL, API
-- Acrônimos curtos (até 3 letras): sempre em maiúsculas
-  > ✅ ONU, MEC
-- Acrônimos longos (4+ letras): apenas a primeira letra maiúscula
-  > ✅ Susep, Detran, Unesco
+- Use imperative verbs on buttons and CTAs: "Save", "Send", "Cancel"
+- Primary CTAs describe the outcome, not the mechanical action
+  > ✅ "Create account" — ❌ "Submit form"
+- Be specific: avoid generic verbs without context
+  > ✅ "Delete project" — ❌ "Delete"
 
 ---
 
-## Números
+## Punctuation
 
-- Números de 1 a 9: escrever por extenso em textos corridos
-  > "Você tem três notificações"
-- Números 10 em diante: usar algarismos
-  > "Você tem 14 notificações"
-- Em interfaces de dados e métricas: sempre algarismos, independentemente do valor
-- Porcentagens: sempre algarismo + símbolo sem espaço
+- Use a period at the end of complete messages (errors, confirmations, instructions)
+- No period on titles, labels, buttons, or placeholders
+- Avoid exclamation marks — reserved for genuine celebratory moments, sparingly
+- Ellipsis only in loading states: "Loading…", "Saving…"
+
+---
+
+## Capitalization
+
+- Section titles and feature names: sentence case
+  > ✅ "Account settings" — ❌ "Account Settings"
+- Buttons: sentence case
+  > ✅ "Create project" — ❌ "Create Project"
+- Acronyms and abbreviations: follow established conventions
+  > ✅ URL, API, ID, UI, UX
+
+---
+
+## Numbers
+
+- Numbers 1–9: spell out in running text
+  > "You have three notifications"
+- Numbers 10 and above: use digits
+  > "You have 14 notifications"
+- In data interfaces and metrics: always digits, regardless of value
+- Percentages: digit + symbol, no space
   > ✅ "10%" — ❌ "10 %"
 
 ---
 
-## Estrangeirismos
+## Terminology
 
-- Evitar termos em inglês quando existe equivalente claro em português
-  > ✅ "Tentar novamente" — ❌ "Retry"
-  > ✅ "Carregar mais" — ❌ "Load more"
-- Termos sem equivalente consolidado podem ser mantidos em inglês, mas de forma consistente
-- Nunca expor erros técnicos em inglês para o usuário: "timeout", "null pointer", "not found"
+- Be consistent: pick one term per concept and stick to it across the product
+- Prefer plain language over technical terms when both are clear
+  > ✅ "Sign in" — ❌ "Authenticate"
+  > ✅ "Load more" — ❌ "Paginate"
+- Never expose raw technical errors to the user: "timeout", "null pointer", "not found"
 
 ---
 
-## Acessibilidade na escrita
+## Accessibility in writing
 
-- Prefira construções neutras sempre que possível
-  > ✅ "Pessoa responsável" — ❌ "O responsável" (quando gênero não é relevante)
-- Evite generalizações que assumam perfil do usuário
+- Prefer inclusive constructions wherever possible
+- Avoid generalizations that assume user profile
 
-**Clareza para leitores de tela:**
-- Não use apenas elementos visuais para transmitir informação — acompanhe com texto
-  > ✅ "Erro: e-mail inválido" — ❌ Apenas um ícone vermelho
-- Links e botões devem fazer sentido fora de contexto
-  > ✅ "Acessar detalhes do pedido" — ❌ "Clique aqui"
-- Textos alternativos descrevem a função, não a aparência
-  > ✅ "Ícone de aviso: ação irreversível" — ❌ "Triângulo amarelo"
+**Clarity for screen readers:**
+- Never use visual-only elements to convey information — accompany with text
+  > ✅ "Error: invalid email" — ❌ A red icon alone
+- Links and buttons must make sense out of context
+  > ✅ "View order details" — ❌ "Click here"
+- Alternative texts describe function, not appearance
+  > ✅ "Warning icon: irreversible action" — ❌ "Yellow triangle"
 
-**Linguagem simples:**
-- Prefira frases curtas e diretas — uma ideia por frase
-- Evite dupla negativa
-  > ✅ "Só usuários com permissão podem editar" — ❌ "Não é possível editar sem permissão de acesso"
-- Use a voz ativa sempre que possível
-  > ✅ "O sistema salvou suas alterações" — ❌ "Suas alterações foram salvas pelo sistema"
+**Plain language:**
+- Prefer short, direct sentences — one idea per sentence
+- Avoid double negatives
+  > ✅ "Only users with permission can edit" — ❌ "It is not possible to edit without access permission"
+- Use active voice whenever possible
+  > ✅ "The system saved your changes" — ❌ "Your changes were saved by the system"
