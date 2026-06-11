@@ -1,22 +1,14 @@
 # harness-builder
 
-Configuração versionada do harness da pasta de trabalho `Ops`: diretrizes de comportamento para **Claude Code** e **Codex** (espelhadas), design system e settings de ambiente.
+Configuração versionada de harness para agentes de código: diretrizes de comportamento, settings, statusline e orientação de design.
 
-## Arquivos
+## Funcionalidades
 
-| Arquivo | Função |
-|---|---|
-| `CLAUDE.md` | Diretrizes de comportamento do agente: escopo, simplicidade, mudanças cirúrgicas, execução orientada a objetivo e ferramentas preferidas. |
-| `AGENTS.md` | Espelho de `CLAUDE.md` para coordenação com o Codex. Mantido em sincronia. |
-| `design/` | Design system: tokens (`DESIGN.md`), guidelines de acessibilidade, animação, voz/tom e escrita, e demo visual (`index.html`). |
-| `.claude/settings.json` | Settings do harness: override de autocompact e proteção de escrita do `second-brain`. |
-| `statusline-command.sh` | Statusline custom — custo cumulativo e tokens da sessão por modelo, uso do rate limit de 5h e countdown do reset. |
-
-## Conceitos centrais
-
-- **Escopo** — operações restritas à pasta `Ops`; `second-brain` é read-only (reforçado por `deny` no settings).
-- **Modelos por menção explícita** — não há regras de delegação automática; pedir "Valide com Opus" / "Revise com Codex" / "Use Fable" spawna o modelo citado diretamente (Agent tool ou plugin Codex).
+- **Configurações Claude Code** — `CLAUDE.md` com diretrizes de comportamento do agente (pensar antes de codar, simplicidade, mudanças cirúrgicas, execução orientada a objetivo, ferramentas preferidas) e `.claude/settings.json` com settings do harness (autocompact, permissions).
+- **Configurações Codex** — `AGENTS.md`, espelho do `CLAUDE.md` mantido em sincronia, para o Codex operar sob as mesmas diretrizes.
+- **Statusline Claude Code** — `statusline-command.sh`: custo cumulativo e tokens da sessão por modelo (formato K/M), uso do rate limit da janela de 5h e countdown do reset.
+- **Orientação de design** — `design/`: tokens de design (`DESIGN.md` — cores, tipografia, espaçamento, componentes), acessibilidade WCAG, animação, voz e tom, regras de escrita e demo visual (`index.html`).
 
 ## Uso
 
-Os arquivos são lidos automaticamente pelo Claude Code quando a sessão roda em `Ops`. `CLAUDE.md` e `AGENTS.md` devem ser editados juntos para permanecerem espelhados.
+Os arquivos são lidos automaticamente pelo Claude Code quando a sessão roda na pasta do repo. `CLAUDE.md` e `AGENTS.md` devem ser editados juntos para permanecerem espelhados.
