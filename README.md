@@ -1,4 +1,4 @@
-# claude-setup
+# harness-builder
 
 Configuração versionada do harness do **Claude Code** (e do Codex, espelhado). Centraliza diretrizes de comportamento e ajustes de ambiente para a pasta de trabalho `Ops`.
 
