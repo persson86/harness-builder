@@ -8,9 +8,9 @@ Configuração versionada do harness do **Claude Code** (e do Codex, espelhado).
 |---|---|
 | `CLAUDE.md` | Diretrizes de comportamento do agente: escopo, simplicidade, mudanças cirúrgicas, execução orientada a objetivo e ferramentas preferidas. |
 | `AGENTS.md` | Espelho de `CLAUDE.md` para coordenação com o Codex. Mantido em sincronia. |
-| `DESIGN.md` | Design tokens (cores, tipografia, espaçamento, componentes) usados em interfaces. |
+| `design/` | Design system: tokens (`DESIGN.md`), guidelines de acessibilidade, animação, voz/tom e escrita, e demo visual (`index.html`). |
 | `.claude/settings.json` | Settings do harness: override de autocompact e proteção de escrita do `second-brain`. |
-| `statusline-command.sh` | Statusline custom — agrega custo cumulativo e tokens da sessão por modelo. |
+| `statusline-command.sh` | Statusline custom — custo cumulativo e tokens da sessão por modelo, uso do rate limit de 5h e countdown do reset. |
 
 ## Conceitos centrais
 
