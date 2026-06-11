@@ -71,51 +71,7 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 
 ---
 
-## 5. Task Delegation
-
-**Spawn subagents to isolate context, parallelize independent work, or offload bulk mechanical tasks.**
-
-Don't spawn when the parent needs the reasoning, when synthesis requires holding things together, or when spawn overhead dominates the task.
-
-Pick the cheapest model that can do the subtask well:
-- **Haiku** — bulk mechanical work, no judgment required. Extração textual, sem comparação semântica — o tier acima interpreta. Examples: mass rename/format/convert, grep/list without synthesis, repetitive boilerplate generation.
-- **Sonnet** — default; respond directly without spawning a subagent. Examples: bug fixes, feature implementation, code explanation, research with synthesis.
-- **Opus** — subtasks needing real planning or tradeoffs. Examples: system architecture decisions, security review, public API design.
-
-**Never spawn Sonnet→Sonnet.** If the task fits Sonnet, answer directly — a subagent adds latency with no benefit.
-
-Subagents follow the same rules recursively, with two hard caps:
-- Haiku does not spawn further subagents. If it needs to, the task was wrong-sized — return to parent.
-- Maximum spawn depth is 2 (parent → subagent → one further tier).
-
-Don't escalate tiers without a concrete reason. If a subagent realizes it needs a higher tier, return to the parent rather than spawning up. Parent owns final output and cross-spawn synthesis. User instructions override.
-
----
-
-## 6. Council — peer-review cruzado entre modelos
-
-Builder profile da skill `/council` (escopada ao Ops). Dois modelos se revisam por **lente, não por rank**: **Codex (gpt-5.5 high) = correção/runtime** (lidera no builder), **Opus = design/arquitetura** (contesta). Revisor sempre **≠ autor**: Sonnet/Claude implementou → Codex revisa; Codex implementou (rescue) → Opus revisa. Externo, isolado de contexto (~60-90s review adversarial). Use deliberadamente, não em toda decisão.
-
-### Gatilhos proativos (sem precisar de pedido)
-
-1. **Pós-refactor não-trivial** — review adversarial do diff antes de marcar concluído.
-2. **Loop sem convergência (2+ falhas)** — diagnosis independente; quebra o bias do executor.
-3. **Decisão arquitetural / tradeoff** — pressão crítica antes de commitar a uma direção.
-
-### Quando NÃO usar
-
-Mecânico (Haiku), single-pass de Sonnet, baixo risco / alta confiança, de dentro de outro subagente (depth 2), análise puramente não-código.
-
-### Como
-
-- Prefira a skill **`/council`** — orquestra coleta do artefato + escolha do backend ≠ autor + framing anti-viés (assuma ≥3 problemas, ancore no repo, concorde só se justificado) + síntese.
-- Direto, se quiser: `codex:codex-rescue` (decisão/análise, read-only) · `/codex:review` ou `adversarial-review` (diff) · `opus-reviewer` via Agent (design de implementação).
-- **Output não auto-aplica:** apresente o veredito; o usuário decide.
-- **Stop-gate** automático Codex→Claude: opt-in per-repo (`/codex:setup --enable-review-gate`), **off por padrão**; ligue em trechos de alto risco.
-
----
-
-## 7. Preferred Tools
+## 5. Preferred Tools
 
 ### Data Fetching
 
@@ -135,4 +91,4 @@ Use `pdftotext`, not the `Read` tool. Use `Read` only when the user directly ask
 
 ---
 
-**These guidelines are working if:** fewer unnecessary changes in diffs, fewer rewrites due to overcomplication, clarifying questions come before implementation rather than after mistakes, and subagent spawns are deliberate and appropriately sized.
+**These guidelines are working if:** fewer unnecessary changes in diffs, fewer rewrites due to overcomplication, and clarifying questions come before implementation rather than after mistakes.
