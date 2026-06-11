@@ -4,12 +4,11 @@ Behavioral guidelines to reduce common LLM coding mistakes. Merge with project-s
 
 ## Scope
 
-**Escopo padrão:** apenas a pasta `/Users/persson/Ops`.
+**Escopo padrão:** apenas a pasta do projeto.
 
-**Exceções (read-only):**
-- `/Users/persson/second-brain` — leitura permitida; escrita e deleção bloqueadas pelo harness
+**Exceções (read-only):** liste aqui caminhos externos que o agente pode ler mas não modificar (ex.: um vault de notas/referência). Bloqueie escrita e deleção neles pelo harness.
 
-**Regra:** qualquer operação fora do escopo padrão (ler, editar, criar, deletar) exige confirmação explícita no chat antes de executar. Nunca acesse arquivos fora de Ops por conveniência ou por contexto implícito.
+**Regra:** qualquer operação fora do escopo padrão (ler, editar, criar, deletar) exige confirmação explícita no chat antes de executar. Nunca acesse arquivos fora do escopo por conveniência ou por contexto implícito.
 
 **Tradeoff:** These guidelines bias toward caution over speed. For trivial tasks, use judgment.
 

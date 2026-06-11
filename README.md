@@ -1,14 +1,14 @@
 # harness-builder
 
-Configuração versionada de harness para agentes de código: diretrizes de comportamento, settings, statusline e orientação de design.
+Versioned harness config for coding agents: behavior guidelines, settings, statusline, and design guidance.
 
-## Funcionalidades
+## Contents
 
-- **Configurações Claude Code** — `CLAUDE.md` com diretrizes de comportamento do agente (pensar antes de codar, simplicidade, mudanças cirúrgicas, execução orientada a objetivo, ferramentas preferidas) e `.claude/settings.json` com settings do harness (autocompact, permissions).
-- **Configurações Codex** — `AGENTS.md`, espelho do `CLAUDE.md` mantido em sincronia, para o Codex operar sob as mesmas diretrizes.
-- **Statusline Claude Code** — `statusline-command.sh`: custo cumulativo e tokens da sessão por modelo (formato K/M), uso do rate limit da janela de 5h e countdown do reset.
-- **Orientação de design** — `design/`: tokens de design (`DESIGN.md` — cores, tipografia, espaçamento, componentes), acessibilidade WCAG, animação, voz e tom, regras de escrita e demo visual (`index.html`).
+- **`CLAUDE.md` / `AGENTS.md`** — agent behavior guidelines (think before coding, simplicity, surgical changes, goal-driven execution, preferred tools). Kept mirrored: edit both together.
+- **`.claude/settings.example.json`** — harness settings template (autocompact, permissions). Copy to `settings.json` and adjust paths.
+- **`statusline-command.sh`** — Claude Code statusline: cumulative session cost and tokens per model, 5h rate-limit usage, and reset countdown.
+- **`design/`** — design tokens (`DESIGN.md`), WCAG accessibility, animation, voice & tone, writing rules, and a visual demo (`index.html`).
 
-## Uso
+## Usage
 
-Os arquivos são lidos automaticamente pelo Claude Code quando a sessão roda na pasta do repo. `CLAUDE.md` e `AGENTS.md` devem ser editados juntos para permanecerem espelhados.
+Files are read automatically by Claude Code when a session runs in the repo folder.

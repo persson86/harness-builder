@@ -1,0 +1,14 @@
+{
+  "env": {
+    "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE": "80"
+  },
+  "permissions": {
+    "deny": [
+      "Edit(/absolute/path/to/read-only-area/**)",
+      "Write(/absolute/path/to/read-only-area/**)",
+      "Bash(rm * /absolute/path/to/read-only-area/**)",
+      "Bash(rmdir * /absolute/path/to/read-only-area/**)",
+      "Bash(mv * /absolute/path/to/read-only-area/**)"
+    ]
+  }
+}

@@ -10,5 +10,5 @@
 !design/**
 design/.DS_Store
 !.claude/
-!.claude/settings.json
+!.claude/settings.example.json
 !statusline-command.sh
