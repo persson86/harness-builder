@@ -8,7 +8,21 @@ Versioned harness config for coding agents: behavior guidelines, settings, statu
 bash <(curl -fsSL https://raw.githubusercontent.com/persson86/harness-builder/main/install.sh)
 ```
 
-Copies `CLAUDE.md`, `AGENTS.md`, `.claude/settings.example.json`, and `statusline-command.sh` into the current directory. Existing files are skipped.
+Sets up the current directory as a workspace:
+
+```
+workspace/
+├── CLAUDE.md                  ← copy: customize per machine/workspace
+├── AGENTS.md                  ← symlink into the repo clone
+├── statusline-command.sh      ← symlink into the repo clone
+├── design/                    ← copy: working version (repo clone is the backup)
+├── .claude/
+│   └── settings.example.json  ← symlink into the repo clone
+└── projects/
+    └── harness-builder/       ← full repo clone; evolve the harness from here
+```
+
+Symlinked files update automatically when the clone is pulled or edited; copied files (`CLAUDE.md`, `design/`) are yours to customize locally. Existing files are never overwritten.
 
 After installing, copy `.claude/settings.example.json` → `.claude/settings.json` and set your paths.
 
