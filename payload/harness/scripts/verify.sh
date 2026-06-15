@@ -54,6 +54,18 @@ quality_gates_shape() {
   ' .claude/quality-gates.json >/dev/null
 }
 
+has_local_scope_markers() {
+  local file="$1"
+  grep -Fqx '<!-- harness-builder:local-scope:start -->' "$file" &&
+    grep -Fqx '<!-- harness-builder:local-scope:end -->' "$file"
+}
+
+has_quality_gate_hook() {
+  jq -e '
+    any(.hooks.Stop[]?.hooks[]?; .command == "$CLAUDE_PROJECT_DIR/.claude/hooks/check-quality-gates.sh")
+  ' ".claude/settings.json" >/dev/null
+}
+
 sha256_of() {
   if command -v sha256sum >/dev/null 2>&1; then
     sha256sum "$1" | awk '{print $1}'
@@ -91,16 +103,23 @@ check "CLAUDE.md exists" exists "CLAUDE.md"
 check "AGENTS.md exists" exists "AGENTS.md"
 check "statusline command exists" exists "statusline-command.sh"
 check "Claude settings exist" exists ".claude/settings.json"
+check "install metadata exists" exists "harness/.install.json"
 check "quality gate hook exists" exists ".claude/hooks/check-quality-gates.sh"
 check "verify script executable" executable "harness/scripts/verify.sh"
+check "update script executable" executable "harness/scripts/update.sh"
 check "quality gate hook executable" executable ".claude/hooks/check-quality-gates.sh"
 
 check "jq is available" command -v jq
 check "Claude settings JSON is valid" valid_json ".claude/settings.json"
+check "install metadata JSON is valid" valid_json "harness/.install.json"
 check "quality gates JSON is valid" valid_json ".claude/quality-gates.json"
 check "quality gates schema is valid" quality_gates_shape
+check "Claude settings include quality gate hook" has_quality_gate_hook
+check "CLAUDE.md has local scope markers" has_local_scope_markers "CLAUDE.md"
+check "AGENTS.md has local scope markers" has_local_scope_markers "AGENTS.md"
 check "quality gate hook syntax" bash -n ".claude/hooks/check-quality-gates.sh"
 check "statusline syntax" bash -n "statusline-command.sh"
+check "update script syntax" bash -n "harness/scripts/update.sh"
 diagnose "installed files match manifest" installed_matches_manifest
 
 if (( failures > 0 )); then

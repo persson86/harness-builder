@@ -3,8 +3,9 @@
 # harness-builder installer
 #
 # Installs payload/ into the target project root and records a manifest for
-# drift checks. Project-owned config such as .claude/quality-gates.json is
-# copied from templates/ only when absent.
+# drift checks. Project-owned config such as .claude/settings.json and
+# .claude/quality-gates.json is merged or copied without overwriting local
+# settings.
 #
 # Usage:
 #   ./install.sh [TARGET_DIR] [--update]
@@ -62,8 +63,10 @@ else
 fi
 
 PAYLOAD="$SRC/payload"
+SETTINGS_TEMPLATE="$PAYLOAD/.claude/settings.json"
 TEMPLATE_CONFIG="$SRC/templates/project/quality-gates.json"
 [[ -d "$PAYLOAD" ]] || { echo "error: payload/ missing from package." >&2; exit 1; }
+[[ -f "$SETTINGS_TEMPLATE" ]] || { echo "error: payload/.claude/settings.json missing from package." >&2; exit 1; }
 [[ -f "$TEMPLATE_CONFIG" ]] || { echo "error: templates/project/quality-gates.json missing from package." >&2; exit 1; }
 
 TARGET=""
@@ -98,9 +101,24 @@ while IFS= read -r file; do
 done < <(cd "$PAYLOAD" && find . -type f | sed 's|^\./||' | sort)
 [[ "${#PAYLOAD_FILES[@]}" -gt 0 ]] || { echo "error: payload/ is empty." >&2; exit 1; }
 
+INSTALL_FILES=()
+COPY_FILES=()
+for rel in "${PAYLOAD_FILES[@]}"; do
+  case "$rel" in
+    .claude/settings.json) ;;
+    CLAUDE.md|AGENTS.md)
+      INSTALL_FILES+=("$rel")
+      ;;
+    *)
+      INSTALL_FILES+=("$rel")
+      COPY_FILES+=("$rel")
+      ;;
+  esac
+done
+
 if [[ "$UPDATE" -eq 0 ]]; then
   collisions=()
-  for rel in "${PAYLOAD_FILES[@]}"; do
+  for rel in "${INSTALL_FILES[@]}"; do
     [[ -e "$TARGET/$rel" ]] && collisions+=("$rel")
   done
   if [[ "${#collisions[@]}" -gt 0 ]]; then
@@ -118,13 +136,159 @@ install_one() {
   mv "$tmp" "$dest"
 }
 
+DOC_LOCAL_START="<!-- harness-builder:local-scope:start -->"
+DOC_LOCAL_END="<!-- harness-builder:local-scope:end -->"
+
+doc_has_local_block() {
+  local file="$1"
+  grep -Fqx "$DOC_LOCAL_START" "$file" && grep -Fqx "$DOC_LOCAL_END" "$file"
+}
+
+extract_doc_local_block() {
+  local file="$1"
+  awk -v start="$DOC_LOCAL_START" -v end="$DOC_LOCAL_END" '
+    $0 == start { in_block = 1; next }
+    $0 == end { exit }
+    in_block { print }
+  ' "$file"
+}
+
+extract_legacy_scope() {
+  local file="$1"
+  awk '
+    /^\*\*Exceptions \(read-only\):\*\*/ { print; found = 1; exit }
+    END { exit found ? 0 : 1 }
+  ' "$file"
+}
+
+write_doc_with_local_block() {
+  local template="$1" block_file="$2" out="$3"
+  awk -v start="$DOC_LOCAL_START" -v end="$DOC_LOCAL_END" -v block_file="$block_file" '
+    $0 == start {
+      print
+      while ((getline line < block_file) > 0) print line
+      close(block_file)
+      in_block = 1
+      next
+    }
+    $0 == end {
+      in_block = 0
+      print
+      next
+    }
+    !in_block { print }
+  ' "$template" > "$out"
+}
+
+backup_legacy_doc() {
+  local rel="$1" dest="$TARGET/$1" stamp backup_dir backup
+  stamp="$(date -u +%Y%m%dT%H%M%SZ)"
+  backup_dir="$TARGET/harness/backups/$stamp"
+  backup="$backup_dir/$rel"
+  mkdir -p "$(dirname "$backup")"
+  cp "$dest" "$backup"
+  echo "  ! backed up legacy $rel to ${backup#$TARGET/}" >&2
+}
+
+merge_doc() {
+  local rel="$1" src="$PAYLOAD/$1" dest="$TARGET/$1" tmp block_tmp
+  [[ -f "$src" ]] || { echo "error: payload/$rel missing from package." >&2; exit 1; }
+  doc_has_local_block "$src" || {
+    echo "error: payload/$rel is missing harness-builder local-scope markers." >&2
+    exit 1
+  }
+
+  mkdir -p "$(dirname "$dest")"
+  tmp="$(mktemp "$dest.tmp.XXXXXX")"
+  block_tmp="$(mktemp "${TMPDIR:-/tmp}/harness-builder-local-block.XXXXXX")"
+
+  if [[ -e "$dest" && ! -f "$dest" ]]; then
+    rm -f "$tmp" "$block_tmp"
+    echo "error: cannot merge $rel because target exists and is not a regular file: $dest" >&2
+    exit 1
+  fi
+
+  if [[ -f "$dest" ]]; then
+    if doc_has_local_block "$dest"; then
+      extract_doc_local_block "$dest" > "$block_tmp"
+      write_doc_with_local_block "$src" "$block_tmp" "$tmp"
+      echo "  = merged $rel (local scope block preserved)" >&2
+    elif extract_legacy_scope "$dest" > "$block_tmp"; then
+      backup_legacy_doc "$rel"
+      write_doc_with_local_block "$src" "$block_tmp" "$tmp"
+      echo "  = merged $rel (legacy read-only exception migrated)" >&2
+    else
+      backup_legacy_doc "$rel"
+      cp "$src" "$tmp"
+      echo "  = replaced legacy $rel (backup kept; no local scope block found)" >&2
+    fi
+  else
+    cp "$src" "$tmp"
+    if [[ -L "$dest" ]]; then
+      echo "  = replaced broken $rel symlink" >&2
+    else
+      echo "  + copied $rel" >&2
+    fi
+  fi
+
+  mv "$tmp" "$dest"
+  rm -f "$block_tmp"
+}
+
+merge_settings() {
+  local dest="$TARGET/.claude/settings.json" tmp
+  mkdir -p "$TARGET/.claude"
+
+  if [[ ! -f "$dest" ]]; then
+    cp "$SETTINGS_TEMPLATE" "$dest"
+    echo "  + copied .claude/settings.json" >&2
+    return 0
+  fi
+
+  command -v jq >/dev/null 2>&1 || {
+    echo "error: jq is required to merge existing .claude/settings.json" >&2
+    echo "       install jq or move the settings file aside before updating." >&2
+    exit 1
+  }
+
+  tmp="$(mktemp "$dest.tmp.XXXXXX")"
+  jq -s '
+    def is_harness_entry:
+      ((.hooks // []) | any(.command == "$CLAUDE_PROJECT_DIR/.claude/hooks/check-quality-gates.sh"));
+    def clean_hooks($hooks):
+      ($hooks // {}) | with_entries(.value = ((.value // []) | map(select(is_harness_entry | not))));
+    def merged_hooks($local; $template):
+      clean_hooks($local.hooks) as $local_hooks |
+      ($template.hooks // {}) as $template_hooks |
+      reduce ($template_hooks | keys_unsorted[]) as $event ($local_hooks;
+        .[$event] = ((.[$event] // []) + ($template_hooks[$event] // []))
+      );
+
+    .[0] as $local |
+    .[1] as $template |
+    ($local // {})
+    | .hooks = merged_hooks($local; $template)
+  ' "$dest" "$SETTINGS_TEMPLATE" > "$tmp" || {
+    rm -f "$tmp"
+    echo "error: failed to merge .claude/settings.json" >&2
+    exit 1
+  }
+  mv "$tmp" "$dest"
+  echo "  = merged .claude/settings.json (local settings preserved)" >&2
+}
+
 echo "Installing harness-builder v$VERSION into $TARGET" >&2
-for rel in "${PAYLOAD_FILES[@]}"; do
+for rel in "${COPY_FILES[@]}"; do
   install_one "$rel"
 done
-echo "  + installed ${#PAYLOAD_FILES[@]} payload files" >&2
+echo "  + installed ${#COPY_FILES[@]} copied payload files" >&2
 
-chmod +x "$TARGET"/.claude/hooks/*.sh "$TARGET"/harness/scripts/verify.sh "$TARGET"/statusline-command.sh 2>/dev/null || true
+merge_doc "CLAUDE.md"
+merge_doc "AGENTS.md"
+
+merge_settings
+
+chmod +x "$TARGET"/.claude/hooks/*.sh "$TARGET"/harness/scripts/*.sh "$TARGET"/statusline-command.sh 2>/dev/null || true
 
 if [[ -f "$TARGET/.claude/quality-gates.json" ]]; then
   echo "  = kept existing .claude/quality-gates.json" >&2
@@ -137,11 +301,19 @@ fi
 mkdir -p "$TARGET/harness"
 MANIFEST="$TARGET/harness/.manifest"
 : > "$MANIFEST"
-for rel in "${PAYLOAD_FILES[@]}"; do
+for rel in "${INSTALL_FILES[@]}"; do
   printf '%s  %s\n' "$(sha256_of "$TARGET/$rel")" "$rel" >> "$MANIFEST"
 done
 printf '%s\n' "$VERSION" > "$TARGET/harness/.version"
-echo "  + wrote harness/.version and harness/.manifest" >&2
+cat > "$TARGET/harness/.install.json" <<JSON
+{
+  "repo": "$REPO",
+  "ref": "$REF",
+  "version": "$VERSION"
+}
+JSON
+echo "  + wrote harness/.version, harness/.install.json and harness/.manifest" >&2
 
 echo "" >&2
 echo "Validate with: bash harness/scripts/verify.sh" >&2
+echo "Next update: bash harness/scripts/update.sh" >&2

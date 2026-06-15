@@ -6,7 +6,9 @@ Behavioral guidelines to reduce common LLM coding mistakes. Merge with project-s
 
 **Default scope:** the project folder only.
 
+<!-- harness-builder:local-scope:start -->
 **Exceptions (read-only):** list external paths the agent may read but not modify (e.g., a notes/reference vault). Block writes and deletions to those paths via the harness.
+<!-- harness-builder:local-scope:end -->
 
 **Rule:** any operation outside the default scope (read, edit, create, delete) requires explicit confirmation in the chat before executing. Never access files outside the scope for convenience or implicit context.
 
@@ -75,6 +77,15 @@ If `.claude/quality-gates.json` declares commands, the Stop hook runs them befor
 - `build` is opt-in via `gates.build_on_stop`.
 - Keep gate commands deterministic, non-interactive, and representative of project success.
 - If a gate fails, fix the issue or update the project-owned config only when the command no longer represents the project.
+
+### Harness Updates
+
+When this harness is installed, update it from the project root with:
+```bash
+bash harness/scripts/update.sh
+```
+
+The update command preserves project-owned `.claude/settings.json` entries such as `permissions`, `env`, and unrelated hooks while refreshing harness-managed files.
 
 ---
 

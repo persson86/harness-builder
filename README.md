@@ -20,7 +20,8 @@ curl -fsSL https://raw.githubusercontent.com/persson86/harness-builder/main/inst
 Update an existing install:
 
 ```bash
-./install.sh /path/to/project --update
+cd /path/to/project
+bash harness/scripts/update.sh
 ```
 
 The installer copies `payload/` into the project root and records:
@@ -34,16 +35,26 @@ project/
 ├── harness/
 │   ├── .manifest
 │   ├── .version
-│   └── scripts/verify.sh
+│   ├── .install.json
+│   └── scripts/
+│       ├── update.sh
+│       └── verify.sh
 └── .claude/
     ├── settings.json
     ├── quality-gates.json
     └── hooks/check-quality-gates.sh
 ```
 
-`payload/` files are harness-managed and overwritten by `--update`.
+Most `payload/` files are harness-managed and overwritten by update.
+`CLAUDE.md` and `AGENTS.md` are merged: content inside
+`harness-builder:local-scope` markers is preserved, and legacy
+`**Exceptions (read-only):** ...` lines are migrated into that block.
+`.claude/settings.json` is project-owned: updates preserve local `env`,
+`permissions`, and unrelated hooks while refreshing the harness Stop hook.
 `.claude/quality-gates.json` is project-owned: it is copied only when absent and
 is never overwritten by update.
+`harness/.manifest` records final hashes for managed files after merge, but
+excludes `.claude/settings.json` because that file is local project config.
 
 ## Quality Gates
 
@@ -83,6 +94,7 @@ visible without bricking the workspace.
 - `payload/CLAUDE.md` and `payload/AGENTS.md` - agent behavior guidelines.
 - `payload/.claude/settings.json` - Claude Code hook wiring.
 - `payload/.claude/hooks/check-quality-gates.sh` - Stop hook for lint/test/build.
+- `payload/harness/scripts/update.sh` - one-command harness update.
 - `payload/statusline-command.sh` - Claude Code statusline helper.
 - `payload/design/` - design tokens, accessibility, animation, voice, writing
   rules, and a visual demo.
