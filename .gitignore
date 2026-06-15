@@ -1,15 +1,18 @@
 # Ignore everything
 *
 
-# Track only these config files
+# Track package metadata and installer
 !.gitignore
-!CLAUDE.md
-!AGENTS.md
 !README.md
-!design/
-!design/**
-design/.DS_Store
-!.claude/
-!.claude/settings.example.json
-!statusline-command.sh
+!VERSION
 !install.sh
+
+# Track the installable harness payload
+!payload/
+!payload/**
+payload/**/.DS_Store
+
+# Track project-owned templates copied outside the payload manifest
+!templates/
+!templates/**
+templates/**/.DS_Store

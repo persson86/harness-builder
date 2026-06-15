@@ -1,34 +1,88 @@
 # harness-builder
 
-Versioned harness config for coding agents: behavior guidelines, settings, statusline, and design guidance.
+Versioned harness config for coding agents: behavior guidelines, Claude settings,
+quality gates, statusline, and design guidance.
 
 ## Install
 
+From a local clone:
+
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/persson86/harness-builder/main/install.sh)
+./install.sh /path/to/project
 ```
 
-Sets up the current directory as a workspace:
+Remote install:
 
-```
-workspace/
-├── CLAUDE.md                  ← copy: customize per machine/workspace
-├── AGENTS.md                  ← symlink into the repo clone
-├── statusline-command.sh      ← symlink into the repo clone
-├── design/                    ← copy: working version (repo clone is the backup)
-├── .claude/
-│   └── settings.example.json  ← symlink into the repo clone
-└── projects/
-    └── harness-builder/       ← full repo clone; evolve the harness from here
+```bash
+curl -fsSL https://raw.githubusercontent.com/persson86/harness-builder/main/install.sh | bash -s -- /path/to/project
 ```
 
-Symlinked files update automatically when the clone is pulled or edited; copied files (`CLAUDE.md`, `design/`) are yours to customize locally. Existing files are never overwritten.
+Update an existing install:
 
-After installing, copy `.claude/settings.example.json` → `.claude/settings.json` and set your paths.
+```bash
+./install.sh /path/to/project --update
+```
+
+The installer copies `payload/` into the project root and records:
+
+```text
+project/
+├── CLAUDE.md
+├── AGENTS.md
+├── statusline-command.sh
+├── design/
+├── harness/
+│   ├── .manifest
+│   ├── .version
+│   └── scripts/verify.sh
+└── .claude/
+    ├── settings.json
+    ├── quality-gates.json
+    └── hooks/check-quality-gates.sh
+```
+
+`payload/` files are harness-managed and overwritten by `--update`.
+`.claude/quality-gates.json` is project-owned: it is copied only when absent and
+is never overwritten by update.
+
+## Quality Gates
+
+Configure `.claude/quality-gates.json` in the installed project:
+
+```json
+{
+  "lint": "npm run lint",
+  "test": "npm test",
+  "build": "",
+  "gates": {
+    "lint_on_stop": true,
+    "test_on_stop": true,
+    "build_on_stop": false
+  }
+}
+```
+
+On Claude Code `Stop`, `check-quality-gates.sh` runs declared commands from the
+project root. Empty commands are skipped. Failed commands block session end with
+the command, exit code, and the last 80 output lines.
+
+## Verify
+
+After install or update:
+
+```bash
+bash harness/scripts/verify.sh
+```
+
+`verify.sh` checks installed files, executable bits, JSON validity, hook syntax,
+and manifest drift. Manifest drift is diagnostic-only so local hotfixes are
+visible without bricking the workspace.
 
 ## Contents
 
-- **`CLAUDE.md` / `AGENTS.md`** — agent behavior guidelines (think before coding, simplicity, surgical changes, goal-driven execution, preferred tools). Kept mirrored: edit both together.
-- **`.claude/settings.example.json`** — harness settings template (autocompact, permissions). Copy to `settings.json` and adjust paths.
-- **`statusline-command.sh`** — Claude Code statusline: cumulative session cost and tokens per model, 5h rate-limit usage, and reset countdown.
-- **`design/`** — design tokens (`DESIGN.md`), WCAG accessibility, animation, voice & tone, writing rules, and a visual demo (`index.html`).
+- `payload/CLAUDE.md` and `payload/AGENTS.md` - agent behavior guidelines.
+- `payload/.claude/settings.json` - Claude Code hook wiring.
+- `payload/.claude/hooks/check-quality-gates.sh` - Stop hook for lint/test/build.
+- `payload/statusline-command.sh` - Claude Code statusline helper.
+- `payload/design/` - design tokens, accessibility, animation, voice, writing
+  rules, and a visual demo.

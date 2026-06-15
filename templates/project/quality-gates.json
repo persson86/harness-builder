@@ -1,0 +1,10 @@
+{
+  "lint": "",
+  "test": "",
+  "build": "",
+  "gates": {
+    "lint_on_stop": true,
+    "test_on_stop": true,
+    "build_on_stop": false
+  }
+}

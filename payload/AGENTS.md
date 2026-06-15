@@ -1,4 +1,4 @@
-# CLAUDE.md
+# AGENTS.md
 
 Behavioral guidelines to reduce common LLM coding mistakes. Merge with project-specific instructions as needed.
 
@@ -67,6 +67,14 @@ For multi-step tasks, state a brief plan:
 ```
 
 Strong success criteria let you loop independently. Weak criteria ("make it work") require constant clarification.
+
+### Mechanical Quality Gates
+
+If `.claude/quality-gates.json` declares commands, the Stop hook runs them before the session can end:
+- `lint` and `test` run by default when their command strings are non-empty.
+- `build` is opt-in via `gates.build_on_stop`.
+- Keep gate commands deterministic, non-interactive, and representative of project success.
+- If a gate fails, fix the issue or update the project-owned config only when the command no longer represents the project.
 
 ---
 
