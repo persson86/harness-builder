@@ -16,3 +16,8 @@ payload/**/.DS_Store
 !templates/
 !templates/**
 templates/**/.DS_Store
+
+# Track personal (non-payload) bridge config — versioned, not installed, not in README
+!personal/
+!personal/**
+personal/**/.DS_Store

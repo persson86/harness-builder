@@ -109,14 +109,4 @@ Use `pdftotext`, not the `Read` tool. Use `Read` only when the user directly ask
 
 ---
 
-## 6. Captura para Thinker
-
-**Padrões descobertos na execução têm mais valor quando indexados.**
-
-Quando um padrão reutilizável, aprendizado de postmortem ou decisão de design emergir de um projeto, sugerir ao usuário capturá-lo no Thinker via `/inbox` ou `/ingest`. Isso é Builder → Thinker, não o inverso — o vault acumula experiência vivida, não conselhos abstratos.
-
-Indicar ao final da sessão: "Vale capturar no Thinker: [o quê em uma frase]."
-
----
-
 **These guidelines are working if:** fewer unnecessary changes in diffs, fewer rewrites due to overcomplication, and clarifying questions come before implementation rather than after mistakes.
