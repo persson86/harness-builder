@@ -392,6 +392,11 @@ run_scan() {
     collect_files "$path"
   done
 
+  if [[ "${#FILES[@]}" -eq 0 ]]; then
+    print_results
+    return $?
+  fi
+
   for file in "${FILES[@]}"; do
     [[ -f "$file" ]] || continue
     ext="$(lower_ext "$file")"
