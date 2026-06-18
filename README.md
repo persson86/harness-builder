@@ -42,7 +42,13 @@ project/
 └── .claude/
     ├── settings.json
     ├── quality-gates.json
-    └── hooks/check-quality-gates.sh
+    ├── hooks/
+    │   ├── check-quality-gates.sh
+    │   └── design-slop-scan.sh
+    └── skills/
+        ├── design-system-guardian/
+        ├── text-integrity-audit/
+        └── visual-originality-audit/
 ```
 
 Most `payload/` files are harness-managed and overwritten by update.
@@ -65,10 +71,12 @@ Configure `.claude/quality-gates.json` in the installed project:
   "lint": "npm run lint",
   "test": "npm test",
   "build": "",
+  "design": "bash .claude/hooks/design-slop-scan.sh .",
   "gates": {
     "lint_on_stop": true,
     "test_on_stop": true,
-    "build_on_stop": false
+    "build_on_stop": false,
+    "design_on_stop": false
   }
 }
 ```
@@ -76,6 +84,23 @@ Configure `.claude/quality-gates.json` in the installed project:
 On Claude Code `Stop`, `check-quality-gates.sh` runs declared commands from the
 project root. Empty commands are skipped. Failed commands block session end with
 the command, exit code, and the last 80 output lines.
+
+The design gate is opt-in. New installs get the `design` command with
+`design_on_stop: false`; existing installs keep their project-owned
+`.claude/quality-gates.json`, so updates do not add these keys automatically. To
+enable design scanning in an existing project, add the `design` command and set
+`gates.design_on_stop` to `true`.
+
+`design-slop-scan.sh` scans markup/CSS and docs for deterministic design and text
+tells. It is a heuristic regex/awk/perl scanner, not a CSS or HTML parser. Text
+Unicode punctuation is review-only by default; use `--strict-text` when a project
+wants that to fail.
+
+Manual design skills provide the judgment layer after scanner evidence:
+
+- `/visual-originality-audit` - rendered UI originality and category-cliche review.
+- `/text-integrity-audit` - copy specificity, rhythm, punctuation, and tone review.
+- `/design-system-guardian` - token adherence against `design/DESIGN.md`.
 
 ## Verify
 
@@ -93,7 +118,9 @@ visible without bricking the workspace.
 
 - `payload/CLAUDE.md` and `payload/AGENTS.md` - agent behavior guidelines.
 - `payload/.claude/settings.json` - Claude Code hook wiring.
-- `payload/.claude/hooks/check-quality-gates.sh` - Stop hook for lint/test/build.
+- `payload/.claude/hooks/check-quality-gates.sh` - Stop hook for lint/test/build/design.
+- `payload/.claude/hooks/design-slop-scan.sh` - opt-in deterministic design/text scanner.
+- `payload/.claude/skills/` - manual design quality audit skills.
 - `payload/harness/scripts/update.sh` - one-command harness update.
 - `payload/statusline-command.sh` - Claude Code statusline helper.
 - `payload/design/` - design tokens, accessibility, animation, voice, writing

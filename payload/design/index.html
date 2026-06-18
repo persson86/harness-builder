@@ -147,7 +147,7 @@
     .space-bar {
       height: 20px;
       background: var(--color-primary-subtle);
-      border-left: 3px solid var(--color-primary);
+      border-left: 1px solid var(--color-primary);
       flex-shrink: 0;
     }
     .space-label { font-family: var(--font-mono); font-size: 12px; min-width: 32px; color: var(--color-primary); font-weight: 500; }
@@ -259,10 +259,18 @@
       height: 8px;
       border-radius: var(--radius-full);
       background: var(--color-primary);
-      width: 40%;
-      transition-property: width;
+      width: 100%;
+      transform: scaleX(0.4);
+      transform-origin: left center;
+      transition-property: transform;
     }
-    .motion-track:hover .motion-bar { width: 100%; }
+    .motion-track:hover .motion-bar { transform: scaleX(1); }
+
+    @media (prefers-reduced-motion: reduce) {
+      .motion-bar {
+        transition: none;
+      }
+    }
 
     /* ── Sub-labels ── */
     .sub { font-size: 13px; font-weight: 500; color: var(--color-muted); margin-bottom: var(--space-sm); }

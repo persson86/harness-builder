@@ -47,10 +47,12 @@ quality_gates_shape() {
     ((.lint // "") | type == "string") and
     ((.test // "") | type == "string") and
     ((.build // "") | type == "string") and
+    ((.design // "") | type == "string") and
     ((.gates // {}) | type == "object") and
     ((.gates.lint_on_stop // true) | type == "boolean") and
     ((.gates.test_on_stop // true) | type == "boolean") and
-    ((.gates.build_on_stop // false) | type == "boolean")
+    ((.gates.build_on_stop // false) | type == "boolean") and
+    ((.gates.design_on_stop // false) | type == "boolean")
   ' .claude/quality-gates.json >/dev/null
 }
 
@@ -105,9 +107,11 @@ check "statusline command exists" exists "statusline-command.sh"
 check "Claude settings exist" exists ".claude/settings.json"
 check "install metadata exists" exists "harness/.install.json"
 check "quality gate hook exists" exists ".claude/hooks/check-quality-gates.sh"
+check "design slop scanner exists" exists ".claude/hooks/design-slop-scan.sh"
 check "verify script executable" executable "harness/scripts/verify.sh"
 check "update script executable" executable "harness/scripts/update.sh"
 check "quality gate hook executable" executable ".claude/hooks/check-quality-gates.sh"
+check "design slop scanner executable" executable ".claude/hooks/design-slop-scan.sh"
 
 check "jq is available" command -v jq
 check "Claude settings JSON is valid" valid_json ".claude/settings.json"
@@ -118,8 +122,10 @@ check "Claude settings include quality gate hook" has_quality_gate_hook
 check "CLAUDE.md has local scope markers" has_local_scope_markers "CLAUDE.md"
 check "AGENTS.md has local scope markers" has_local_scope_markers "AGENTS.md"
 check "quality gate hook syntax" bash -n ".claude/hooks/check-quality-gates.sh"
+check "design slop scanner syntax" bash -n ".claude/hooks/design-slop-scan.sh"
 check "statusline syntax" bash -n "statusline-command.sh"
 check "update script syntax" bash -n "harness/scripts/update.sh"
+check "design slop scanner selftest" bash ".claude/hooks/design-slop-scan.sh" --selftest
 diagnose "installed files match manifest" installed_matches_manifest
 
 if (( failures > 0 )); then

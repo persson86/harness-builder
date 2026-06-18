@@ -78,6 +78,15 @@ If `.claude/quality-gates.json` declares commands, the Stop hook runs them befor
 - Keep gate commands deterministic, non-interactive, and representative of project success.
 - If a gate fails, fix the issue or update the project-owned config only when the command no longer represents the project.
 
+### Design Quality Gates
+
+The harness includes an opt-in deterministic design scanner:
+- Configure `design` in `.claude/quality-gates.json` and enable `gates.design_on_stop` to run it on Stop.
+- `design-slop-scan.sh` is a heuristic regex/awk/perl scanner, not a CSS or HTML parser.
+- Use it as evidence before manual design review; it does not replace judgment.
+- Manual skills add the judgment layer: `/visual-originality-audit`, `/text-integrity-audit`, and `/design-system-guardian`.
+- Skills are invoked manually and do not run automatically in the Stop hook.
+
 ### Harness Updates
 
 When this harness is installed, update it from the project root with:

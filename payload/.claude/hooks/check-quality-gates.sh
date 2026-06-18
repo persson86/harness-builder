@@ -33,12 +33,14 @@ if ! jq -e '
   ((.lint // "") | type == "string") and
   ((.test // "") | type == "string") and
   ((.build // "") | type == "string") and
+  ((.design // "") | type == "string") and
   ((.gates // {}) | type == "object") and
   ((.gates.lint_on_stop // true) | type == "boolean") and
   ((.gates.test_on_stop // true) | type == "boolean") and
-  ((.gates.build_on_stop // false) | type == "boolean")
+  ((.gates.build_on_stop // false) | type == "boolean") and
+  ((.gates.design_on_stop // false) | type == "boolean")
 ' "$CONFIG" >/dev/null; then
-  block ".claude/quality-gates.json has an invalid shape. Expected string lint/test/build commands and boolean gates."
+  block ".claude/quality-gates.json has an invalid shape. Expected string lint/test/build/design commands and boolean gates."
 fi
 
 config_value() {
@@ -87,5 +89,6 @@ run_if_declared() {
 run_if_declared "lint" "true"
 run_if_declared "test" "true"
 run_if_declared "build" "false"
+run_if_declared "design" "false"
 
 exit 0

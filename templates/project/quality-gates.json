@@ -2,9 +2,11 @@
   "lint": "",
   "test": "",
   "build": "",
+  "design": "bash .claude/hooks/design-slop-scan.sh .",
   "gates": {
     "lint_on_stop": true,
     "test_on_stop": true,
-    "build_on_stop": false
+    "build_on_stop": false,
+    "design_on_stop": false
   }
 }
