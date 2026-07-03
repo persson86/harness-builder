@@ -145,7 +145,7 @@ HTML
       git add . && git commit -qm init &&
       printf '.x{background:linear-gradient(90deg,purple,indigo);background-clip:text}\n' > dirty.css &&
       printf '.y{border-radius:24px}\n' > untracked.css &&
-      changed="$(bash "$scanner" --changed . 2>&1)" )
+      bash "$scanner" --changed . >/dev/null 2>&1 )
     status=$?
     [[ "$status" -eq 0 || "$status" -eq 1 ]] || { printf 'selftest FAIL: --changed execution failed\n' >&2; return 1; }
   fi

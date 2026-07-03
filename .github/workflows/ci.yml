@@ -13,6 +13,17 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
+      - name: Install ShellCheck
+        run: |
+          if command -v shellcheck >/dev/null 2>&1; then
+            exit 0
+          fi
+          if [[ "$RUNNER_OS" == "macOS" ]]; then
+            brew install shellcheck
+          else
+            sudo apt-get update
+            sudo apt-get install -y shellcheck
+          fi
       - name: Bash syntax
         run: find . -name '*.sh' -print0 | xargs -0 -n1 bash -n
       - name: ShellCheck
