@@ -1,10 +1,10 @@
 {
   "lint": "",
-  "test": "",
+  "test": "bash tests/integration.sh && bash payload/.claude/hooks/design-slop-scan.sh --selftest",
   "build": "",
-  "design": "bash .claude/hooks/design-slop-scan.sh --changed .",
+  "design": "",
   "gates": {
-    "lint_on_stop": true,
+    "lint_on_stop": false,
     "test_on_stop": true,
     "build_on_stop": false,
     "design_on_stop": false,

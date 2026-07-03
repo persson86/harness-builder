@@ -1,10 +1,15 @@
 #!/usr/bin/env bash
 set -u
 
-cat >/dev/null || true
+INPUT="$(cat || true)"
+if command -v jq >/dev/null 2>&1 &&
+   printf '%s' "$INPUT" | jq -e '.stop_hook_active == true' >/dev/null 2>&1; then
+  exit 0
+fi
 
 ROOT="${CLAUDE_PROJECT_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}"
 CONFIG="$ROOT/.claude/quality-gates.json"
+CACHE_FILE="$ROOT/.claude/.quality-gates-ok"
 
 [[ -f "$CONFIG" ]] || exit 0
 
@@ -38,7 +43,8 @@ if ! jq -e '
   ((.gates.lint_on_stop // true) | type == "boolean") and
   ((.gates.test_on_stop // true) | type == "boolean") and
   ((.gates.build_on_stop // false) | type == "boolean") and
-  ((.gates.design_on_stop // false) | type == "boolean")
+  ((.gates.design_on_stop // false) | type == "boolean") and
+  ((.gates.cache // false) | type == "boolean")
 ' "$CONFIG" >/dev/null; then
   block ".claude/quality-gates.json has an invalid shape. Expected string lint/test/build/design commands and boolean gates."
 fi
@@ -61,17 +67,59 @@ gate_command() {
   config_value ".${key} // \"\""
 }
 
+cache_enabled() {
+  [[ "$(config_value '.gates.cache // false')" == "true" ]]
+}
+
+sha256_stdin() {
+  if command -v sha256sum >/dev/null 2>&1; then
+    sha256sum | awk '{print $1}'
+  else
+    shasum -a 256 | awk '{print $1}'
+  fi
+}
+
+working_tree_key() {
+  cd "$ROOT" || return 1
+  git rev-parse --is-inside-work-tree >/dev/null 2>&1 || return 1
+
+  local head status_hash diff_hash
+  head="$(git rev-parse HEAD 2>/dev/null)" || return 1
+  status_hash="$(git status --porcelain=v1 -- . ':(exclude).claude/.quality-gates-ok' 2>/dev/null | sha256_stdin)" || return 1
+  diff_hash="$(git diff --no-ext-diff --binary HEAD -- . ':(exclude).claude/.quality-gates-ok' 2>/dev/null | sha256_stdin)" || return 1
+  printf '%s:%s:%s\n' "$head" "$status_hash" "$diff_hash"
+}
+
+cache_matches() {
+  cache_enabled || return 1
+  [[ -f "$CACHE_FILE" ]] || return 1
+
+  local key old
+  key="$(working_tree_key)" || return 1
+  old="$(cat "$CACHE_FILE" 2>/dev/null || printf '')"
+  [[ "$key" == "$old" ]]
+}
+
+write_cache() {
+  cache_enabled || return 0
+  local key
+  key="$(working_tree_key)" || return 0
+  mkdir -p "$(dirname "$CACHE_FILE")"
+  printf '%s\n' "$key" > "$CACHE_FILE"
+}
+
 run_gate() {
   local key="$1"
   local cmd="$2"
   local output status snippet
 
-  output="$(cd "$ROOT" && bash -lc "$cmd" 2>&1)"
+  output="$(cd "$ROOT" && bash -c "$cmd" 2>&1)"
   status=$?
 
   if [[ "$status" -ne 0 ]]; then
+    rm -f "$CACHE_FILE" 2>/dev/null || true
     snippet="$(printf '%s\n' "$output" | tail -n 80)"
-    block "Quality gate failed: $key\nCommand: $cmd\nExit code: $status\n\n$snippet"
+    block "Quality gate failed: $key\nCommand: $cmd\nExit code: $status\n\n$snippet\n\nTo skip this gate once, set gates.${key}_on_stop=false in .claude/quality-gates.json (revert after)."
   fi
 }
 
@@ -86,9 +134,14 @@ run_if_declared() {
   run_gate "$key" "$cmd"
 }
 
+if cache_matches; then
+  exit 0
+fi
+
 run_if_declared "lint" "true"
 run_if_declared "test" "true"
 run_if_declared "build" "false"
 run_if_declared "design" "false"
 
+write_cache
 exit 0

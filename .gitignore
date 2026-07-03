@@ -7,6 +7,14 @@
 !VERSION
 !install.sh
 
+# Track repo automation and dogfood gates
+!.claude/
+!.claude/quality-gates.json
+!.github/
+!.github/**
+!tests/
+!tests/**
+
 # Track the installable harness payload
 !payload/
 !payload/**

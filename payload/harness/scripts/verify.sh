@@ -5,14 +5,27 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "$ROOT"
 
 failures=0
+QUIET=0
+
+for arg in "$@"; do
+  case "$arg" in
+    --quiet) QUIET=1 ;;
+    -h|--help)
+      printf 'Usage: bash harness/scripts/verify.sh [--quiet]\n'
+      exit 0
+      ;;
+    *) printf 'error: unknown flag: %s\n' "$arg" >&2; exit 2 ;;
+  esac
+done
 
 check() {
   local name="$1"
   shift
-  printf '[verify] %s\n' "$name"
+  [[ "$QUIET" -eq 1 ]] || printf '[verify] %s\n' "$name"
   if "$@"; then
-    printf '  => ok\n'
+    [[ "$QUIET" -eq 1 ]] || printf '  => ok\n'
   else
+    [[ "$QUIET" -eq 1 ]] && printf '[verify] %s\n' "$name" >&2
     printf '  => FAIL\n' >&2
     failures=$((failures + 1))
   fi
@@ -21,10 +34,11 @@ check() {
 diagnose() {
   local name="$1"
   shift
-  printf '[verify] %s\n' "$name"
+  [[ "$QUIET" -eq 1 ]] || printf '[verify] %s\n' "$name"
   if "$@"; then
-    printf '  => ok\n'
+    [[ "$QUIET" -eq 1 ]] || printf '  => ok\n'
   else
+    [[ "$QUIET" -eq 1 ]] && printf '[verify] %s\n' "$name" >&2
     printf '  => WARN (diagnostic reported issues)\n' >&2
   fi
 }
@@ -52,7 +66,8 @@ quality_gates_shape() {
     ((.gates.lint_on_stop // true) | type == "boolean") and
     ((.gates.test_on_stop // true) | type == "boolean") and
     ((.gates.build_on_stop // false) | type == "boolean") and
-    ((.gates.design_on_stop // false) | type == "boolean")
+    ((.gates.design_on_stop // false) | type == "boolean") and
+    ((.gates.cache // false) | type == "boolean")
   ' .claude/quality-gates.json >/dev/null
 }
 
@@ -68,6 +83,17 @@ has_quality_gate_hook() {
   ' ".claude/settings.json" >/dev/null
 }
 
+has_statusline() {
+  jq -e '
+    .statusLine.type == "command" and
+    (.statusLine.command // "") == "$CLAUDE_PROJECT_DIR/statusline-command.sh"
+  ' ".claude/settings.json" >/dev/null
+}
+
+has_installed_skills() {
+  compgen -G ".claude/skills/*/SKILL.md" >/dev/null
+}
+
 sha256_of() {
   if command -v sha256sum >/dev/null 2>&1; then
     sha256sum "$1" | awk '{print $1}'
@@ -78,7 +104,7 @@ sha256_of() {
 
 installed_matches_manifest() {
   local manifest="harness/.manifest"
-  [[ -f "$manifest" ]] || { printf '  (sem harness/.manifest; install antigo ou manual)\n'; return 0; }
+  [[ -f "$manifest" ]] || { printf '  (no harness/.manifest; old or manual install)\n'; return 0; }
 
   local drift=0 rel want got line
   while IFS= read -r line; do
@@ -101,6 +127,23 @@ installed_matches_manifest() {
   [[ "$drift" -eq 0 ]]
 }
 
+check_remote_version() {
+  command -v curl >/dev/null 2>&1 || return 0
+  command -v jq >/dev/null 2>&1 || return 0
+  [[ -f harness/.install.json && -f harness/.version ]] || return 0
+
+  local repo ref current remote url
+  repo="$(jq -r '.repo // empty' harness/.install.json 2>/dev/null || printf '')"
+  ref="$(jq -r '.ref // empty' harness/.install.json 2>/dev/null || printf '')"
+  current="$(tr -d '[:space:]' < harness/.version 2>/dev/null || printf '')"
+  [[ -n "$repo" && -n "$ref" && -n "$current" ]] || return 0
+  url="https://raw.githubusercontent.com/$repo/$ref/VERSION"
+  remote="$(curl -fsSL --connect-timeout 3 --max-time 5 "$url" 2>/dev/null | tr -d '[:space:]' || printf '')"
+  [[ -n "$remote" && "$remote" != "$current" ]] || return 0
+  printf '[verify] update available: %s -> %s\n' "$current" "$remote" >&2
+  return 0
+}
+
 check "CLAUDE.md exists" exists "CLAUDE.md"
 check "AGENTS.md exists" exists "AGENTS.md"
 check "statusline command exists" exists "statusline-command.sh"
@@ -113,12 +156,14 @@ check "update script executable" executable "harness/scripts/update.sh"
 check "quality gate hook executable" executable ".claude/hooks/check-quality-gates.sh"
 check "design slop scanner executable" executable ".claude/hooks/design-slop-scan.sh"
 
-check "jq is available" command -v jq
+check "jq is available" bash -c 'command -v jq >/dev/null'
 check "Claude settings JSON is valid" valid_json ".claude/settings.json"
 check "install metadata JSON is valid" valid_json "harness/.install.json"
 check "quality gates JSON is valid" valid_json ".claude/quality-gates.json"
 check "quality gates schema is valid" quality_gates_shape
 check "Claude settings include quality gate hook" has_quality_gate_hook
+diagnose "Claude settings include statusline" has_statusline
+check "Claude skills installed" has_installed_skills
 check "CLAUDE.md has local scope markers" has_local_scope_markers "CLAUDE.md"
 check "AGENTS.md has local scope markers" has_local_scope_markers "AGENTS.md"
 check "quality gate hook syntax" bash -n ".claude/hooks/check-quality-gates.sh"
@@ -127,6 +172,7 @@ check "statusline syntax" bash -n "statusline-command.sh"
 check "update script syntax" bash -n "harness/scripts/update.sh"
 check "design slop scanner selftest" bash ".claude/hooks/design-slop-scan.sh" --selftest
 diagnose "installed files match manifest" installed_matches_manifest
+check_remote_version
 
 if (( failures > 0 )); then
   printf '[verify] %d failure(s)\n' "$failures" >&2

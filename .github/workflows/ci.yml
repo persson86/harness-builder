@@ -1,0 +1,23 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Bash syntax
+        run: find . -name '*.sh' -print0 | xargs -0 -n1 bash -n
+      - name: ShellCheck
+        run: find . -name '*.sh' -print0 | xargs -0 shellcheck -S warning
+      - name: Scanner selftest
+        run: bash payload/.claude/hooks/design-slop-scan.sh --selftest
+      - name: Integration tests
+        run: bash tests/integration.sh
