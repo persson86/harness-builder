@@ -79,7 +79,7 @@ collect_changed_files() {
 }
 
 selftest() {
-  local out json changed status scanner
+  local out json status scanner
   scanner="$(cd "$(dirname "$0")" && pwd)/$(basename "$0")"
   SELFTEST_TMP="$(mktemp -d "${TMPDIR:-/tmp}/design-slop-scan.XXXXXX")" || exit 1
   trap 'rm -rf "${SELFTEST_TMP:-}"' EXIT
