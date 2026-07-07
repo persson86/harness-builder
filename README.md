@@ -59,6 +59,8 @@ project/
     │   └── design-slop-scan.sh
     └── skills/
         ├── design-system-guardian/
+        ├── goal-loop/
+        ├── handoff/
         ├── text-integrity-audit/
         └── visual-originality-audit/
 ```
@@ -158,7 +160,9 @@ the repo/ref recorded in `harness/.install.json`; network failures are ignored.
 - `payload/.claude/settings.json` - Claude Code hook wiring.
 - `payload/.claude/hooks/check-quality-gates.sh` - Stop hook for lint/test/build/design.
 - `payload/.claude/hooks/design-slop-scan.sh` - deterministic design/text scanner.
-- `payload/.claude/skills/` - manual design quality audit skills.
+- `payload/.claude/skills/design-system-guardian/`, `text-integrity-audit/`, `visual-originality-audit/` - manual design quality audit skills.
+- `payload/.claude/skills/goal-loop/` - author an effective `/goal` contract for long autonomous loops, wired to `.claude/quality-gates.json`.
+- `payload/.claude/skills/handoff/` - compact a long session into a copy-paste resume block for a new session or agent.
 - `payload/harness/scripts/update.sh` - one-command harness update.
 - `payload/statusline-command.sh` - Claude Code statusline helper.
 - `payload/design/` - design tokens, accessibility, animation, voice, writing
