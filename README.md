@@ -77,7 +77,10 @@ installed harness files should usually add `harness/backups/` to their own
 `.claude/settings.json` is project-owned: updates preserve local `env`,
 `permissions`, custom `statusLine`, and unrelated hooks while refreshing the
 harness Stop hook. If absent, updates add harness defaults such as
-`statusLine` and `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE`.
+`statusLine` and `autoCompactWindow` (300000 tokens; models with a native 1M
+window otherwise compact near 967K). A local `autoCompactWindow`, including
+`"auto"`, is kept. The legacy `env.CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` is removed
+only when it still holds the `"80"` written by harness 1.3.0 and earlier.
 `.claude/quality-gates.json` is project-owned: it is copied only when absent and
 is never overwritten by update.
 `harness/.manifest` records final hashes for managed files after merge, but
@@ -163,6 +166,7 @@ the repo/ref recorded in `harness/.install.json`; network failures are ignored.
 - `payload/.claude/skills/design-system-guardian/`, `text-integrity-audit/`, `visual-originality-audit/` - manual design quality audit skills.
 - `payload/.claude/skills/goal-loop/` - author an effective `/goal` contract for long autonomous loops, wired to `.claude/quality-gates.json`.
 - `payload/.claude/skills/handoff/` - compact a long session into a copy-paste resume block for a new session or agent.
+- `payload/.claude/skills/integration-card/` - one card per external service (`docs/integrations/<service>.md`): cost, sync/async semantics, limits, tested recipes, pitfalls, and where the code enforces budget, ledger, async recapture and stop condition.
 - `payload/harness/scripts/update.sh` - one-command harness update.
 - `payload/statusline-command.sh` - Claude Code statusline helper.
 - `payload/design/` - design tokens, accessibility, animation, voice, writing

@@ -68,7 +68,11 @@ install_into "$CLEAN" >/dev/null
 (cd "$CLEAN" && bash harness/scripts/verify.sh --quiet)
 assert_file "$CLEAN/.claude/settings.json"
 assert_jq "$CLEAN/.claude/settings.json" '.statusLine.command == "$CLAUDE_PROJECT_DIR/statusline-command.sh"' "clean install should include statusline"
-assert_jq "$CLEAN/.claude/settings.json" '.env.CLAUDE_AUTOCOMPACT_PCT_OVERRIDE == "80"' "clean install should include env"
+assert_jq "$CLEAN/.claude/settings.json" '.autoCompactWindow == 300000' "clean install should set the compaction window"
+assert_jq "$CLEAN/.claude/settings.json" 'has("env") | not' "clean install should not ship the legacy env"
+assert_file "$CLEAN/.claude/skills/integration-card/SKILL.md"
+grep -q "Execution gate" "$CLEAN/.claude/skills/integration-card/SKILL.md" || { echo "FAIL: integration card must define the execution gate" >&2; exit 1; }
+grep -q "docs/integrations/<service>.md" "$CLEAN/CLAUDE.md" || { echo "FAIL: CLAUDE.md must point to integration cards" >&2; exit 1; }
 assert_no_file "$CLEAN/payload/.DS_Store"
 if find "$CLEAN" -name .DS_Store -print | grep -q .; then
   echo "FAIL: .DS_Store copied into target" >&2
@@ -92,7 +96,7 @@ mkdir -p "$SETTINGS/.claude"
 cat > "$SETTINGS/.claude/settings.json" <<'JSON'
 {
   "permissions": {"deny": ["WebFetch"]},
-  "env": {"CUSTOM_ENV": "kept"},
+  "env": {"CUSTOM_ENV": "kept", "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE": "80"},
   "hooks": {
     "Stop": [
       {"hooks": [
@@ -108,7 +112,24 @@ cat > "$SETTINGS/.claude/settings.json" <<'JSON'
 JSON
 install_into "$SETTINGS" --update >/dev/null
 assert_jq "$SETTINGS/.claude/settings.json" '.permissions.deny[0] == "WebFetch"' "permissions should be preserved"
-assert_jq "$SETTINGS/.claude/settings.json" '.env.CUSTOM_ENV == "kept" and .env.CLAUDE_AUTOCOMPACT_PCT_OVERRIDE == "80"' "env should merge template defaults without overwriting local"
+assert_jq "$SETTINGS/.claude/settings.json" '.env.CUSTOM_ENV == "kept"' "local env should be preserved"
+assert_jq "$SETTINGS/.claude/settings.json" '.env | has("CLAUDE_AUTOCOMPACT_PCT_OVERRIDE") | not' "legacy harness env value should be removed"
+assert_jq "$SETTINGS/.claude/settings.json" '.autoCompactWindow == 300000' "compaction window should be added when absent"
+
+echo "[integration] compaction settings respect local choices"
+for local_json in '{"autoCompactWindow": 500000}' '{"autoCompactWindow": "auto"}' '{"env": {"CLAUDE_AUTOCOMPACT_PCT_OVERRIDE": "70"}}' '{"env": {"CLAUDE_AUTOCOMPACT_PCT_OVERRIDE": "80"}}'; do
+  LOCAL="$TMP_ROOT/compact-$RANDOM"
+  mkdir -p "$LOCAL/.claude"
+  printf '%s\n' "$local_json" > "$LOCAL/.claude/settings.json"
+  install_into "$LOCAL" --update >/dev/null 2>&1
+  install_into "$LOCAL" --update >/dev/null 2>&1
+  expected_window="$(printf '%s' "$local_json" | jq '.autoCompactWindow // 300000')"
+  assert_jq "$LOCAL/.claude/settings.json" ".autoCompactWindow == $expected_window" "local compaction window should win: $local_json"
+  case "$local_json" in
+    *'"70"'*) assert_jq "$LOCAL/.claude/settings.json" '.env.CLAUDE_AUTOCOMPACT_PCT_OVERRIDE == "70"' "non-harness env value should be kept" ;;
+    *'"80"'*) assert_jq "$LOCAL/.claude/settings.json" 'has("env") | not' "empty env should be dropped after legacy removal" ;;
+  esac
+done
 assert_jq "$SETTINGS/.claude/settings.json" '.statusLine.command == "$CLAUDE_PROJECT_DIR/statusline-command.sh"' "statusline should be added when absent"
 assert_jq "$SETTINGS/.claude/settings.json" '[.hooks.Stop[]?.hooks[]?.command] | map(select(. == "$CLAUDE_PROJECT_DIR/.claude/hooks/check-quality-gates.sh")) | length == 1' "harness hook should appear once"
 assert_jq "$SETTINGS/.claude/settings.json" '[.hooks.Stop[]?.hooks[]?.command] | index("$CLAUDE_PROJECT_DIR/.claude/hooks/old-quality-gates.sh") == null' "legacy harness hook should be removed"

@@ -345,6 +345,13 @@ merge_settings() {
     .[1] as $template |
     ($local // {})
     | .env = (($template.env // {}) + (.env // {}))
+    # Legacy: harness <= 1.3.0 shipped CLAUDE_AUTOCOMPACT_PCT_OVERRIDE=80. It is not in the
+    # current Claude Code docs and, as a percentage of a 1M window, would not cap anything.
+    # Remove it only when it still holds the value the harness wrote.
+    | (if .env.CLAUDE_AUTOCOMPACT_PCT_OVERRIDE == "80" then .env |= del(.CLAUDE_AUTOCOMPACT_PCT_OVERRIDE) else . end)
+    | (if .env == {} then del(.env) else . end)
+    | (if $template.autoCompactWindow != null and .autoCompactWindow == null
+       then .autoCompactWindow = $template.autoCompactWindow else . end)
     | .statusLine = (.statusLine // $template.statusLine)
     | .hooks = merged_hooks($local; $template)
   ' --argjson managed "$managed_hooks_json" "$dest" "$SETTINGS_TEMPLATE" > "$tmp" || {
@@ -352,6 +359,9 @@ merge_settings() {
     echo "error: failed to merge .claude/settings.json" >&2
     exit 1
   }
+  if [[ "$(jq -r '.env.CLAUDE_AUTOCOMPACT_PCT_OVERRIDE // empty' "$dest")" == "80" ]]; then
+    echo "  - removed legacy env CLAUDE_AUTOCOMPACT_PCT_OVERRIDE=80 (now autoCompactWindow)" >&2
+  fi
   if [[ "$DRY_RUN" -eq 1 ]]; then
     rm -f "$tmp"
   else

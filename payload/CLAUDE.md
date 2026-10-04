@@ -106,6 +106,14 @@ The update command preserves project-owned `.claude/settings.json` entries such 
 2. **agent-browser CLI** — for dynamic pages or auth walls WebFetch can't handle. Returns the accessibility tree with element refs — ~82% fewer tokens than screenshot-based tools. Install: `npm i -g agent-browser && agent-browser install`. Use `snapshot` for AI-friendly DOM state, element refs for interaction.
 3. **Notice recurring fetch patterns and propose wrapping them as dedicated tools.** When the same fetch/parse logic appears more than once, suggest wrapping it as a named tool (skill file or `.py` script). Add the entry to `## Dedicated Tools` and reference it by name on future calls.
 
+### External APIs and Paid Services
+
+Each external service the project calls has a card at `docs/integrations/<service>.md` (skill `/integration-card`).
+- Read the card before the first call, and before any paid run or loop over more than one call. If it is missing, write it first.
+- Do not run a paid or bulk job while any line of the card's "Execution gate" says "missing": budget cap, spend ledger, registry of pending async requests with its recapture step, stop condition.
+- A probe that spends money needs the user's explicit OK, inside the budget they set.
+- After any surprise from the service, add it to the card's Pitfalls with date and evidence.
+
 ### PDF Files
 
 Use `pdftotext`, not the `Read` tool. Use `Read` only when the user directly asks to analyze images or charts inside the document.
